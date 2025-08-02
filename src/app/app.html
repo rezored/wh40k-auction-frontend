@@ -1,0 +1,15 @@
+<div class="app-layout">
+    <nav>
+        <a routerLink="/">Home</a>
+        <a routerLink="/listings">Listings</a>
+        <a routerLink="/sap-demo">SAP Demo</a>
+        <a routerLink="/login" *ngIf="!auth.isLoggedIn()">Login</a>
+        <a routerLink="/register" *ngIf="!auth.isLoggedIn()">Register</a>
+        <button mat-button color="warn" (click)="auth.logout()"
+            *ngIf="auth.isLoggedIn()">Logout</button>
+    </nav>
+
+    <main>
+        <router-outlet></router-outlet>
+    </main>
+</div>
