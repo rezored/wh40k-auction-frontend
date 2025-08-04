@@ -1,59 +1,153 @@
-# AuctionFrontend
+# WH40K Auction House
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.4.
+A modern auction house application for Warhammer 40,000 collectibles and miniatures, built with Angular 17 and Bootstrap.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Modern UI/UX**: Clean, responsive design with Bootstrap 5
+- **Auction Management**: Create, view, and manage auctions
+- **Bidding System**: Real-time bidding with bid history
+- **User Authentication**: Secure login and registration
+- **Search & Filter**: Advanced filtering by category, price, and status
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
 
+## Tech Stack
+
+- **Frontend**: Angular 17 (Standalone Components)
+- **Styling**: Bootstrap 5 + Custom CSS
+- **Icons**: Font Awesome 6
+- **HTTP Client**: Angular HttpClient with interceptors
+- **State Management**: Angular Signals
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-ng serve
+git clone <repository-url>
+cd wh40k-auction-frontend
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. Install dependencies:
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+3. Start the development server:
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+4. Open your browser and navigate to `http://localhost:4200`
 
-To build the project run:
+## Project Structure
 
-```bash
-ng build
+```
+src/
+├── app/
+│   ├── auth/                 # Authentication components
+│   │   ├── login/
+│   │   └── register/
+│   ├── auctions/             # Auction-related components
+│   │   ├── auction-detail/
+│   │   └── create-auction/
+│   ├── bids/                 # Bidding components
+│   │   └── my-bids/
+│   ├── profile/              # User profile
+│   ├── services/             # API services
+│   │   ├── auth.service.ts
+│   │   └── auction.service.ts
+│   ├── app.component.ts      # Main app component
+│   ├── app.config.ts         # App configuration
+│   └── app.routes.ts         # Routing configuration
+├── styles.scss               # Global styles
+└── main.ts                   # Application entry point
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Features Overview
 
-## Running unit tests
+### Authentication
+- User registration and login
+- JWT token-based authentication
+- Protected routes
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Auction Management
+- Create new auctions with detailed information
+- Upload images and set starting prices
+- Set auction end times
+- Category and condition selection
 
+### Bidding System
+- Real-time bidding on active auctions
+- Bid history tracking
+- Current price display
+- Time remaining countdown
+
+### Search & Filter
+- Filter by category (Miniatures, Books, Terrain, etc.)
+- Filter by price range
+- Filter by auction status
+- Sort by various criteria
+
+### User Dashboard
+- View personal bidding history
+- Track auction status
+- Manage profile information
+
+## API Integration
+
+The application is designed to work with a backend API. Update the API endpoints in the services:
+
+- `src/app/services/auth.service.ts` - Authentication endpoints
+- `src/app/services/auction.service.ts` - Auction and bidding endpoints
+
+## Styling
+
+The application uses a custom WH40K theme with:
+- Dark gradient backgrounds
+- Gold accent colors
+- Modern card-based layouts
+- Responsive grid system
+- Custom animations and transitions
+
+## Development
+
+### Running Tests
 ```bash
-ng test
+npm test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
+### Building for Production
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Code Style
+The project uses Prettier for code formatting. Run:
+```bash
+npm run format
+```
 
-## Additional Resources
+## Contributing
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Acknowledgments
+
+- Warhammer 40,000 is a trademark of Games Workshop
+- Built with Angular and Bootstrap
+- Icons provided by Font Awesome

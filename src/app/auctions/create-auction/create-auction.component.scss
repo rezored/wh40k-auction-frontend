@@ -1,0 +1,25 @@
+.card {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: none;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  border-bottom: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #1a1a2e;
+  box-shadow: 0 0 0 0.2rem rgba(26, 26, 46, 0.25);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #16213e, #0f3460);
+} 

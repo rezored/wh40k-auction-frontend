@@ -1,15 +1,67 @@
-<div class="app-layout">
-    <nav>
-        <a routerLink="/">Home</a>
-        <a routerLink="/listings">Listings</a>
-        <a routerLink="/sap-demo">SAP Demo</a>
-        <a routerLink="/login" *ngIf="!auth.isLoggedIn()">Login</a>
-        <a routerLink="/register" *ngIf="!auth.isLoggedIn()">Register</a>
-        <button mat-button color="warn" (click)="auth.logout()"
-            *ngIf="auth.isLoggedIn()">Logout</button>
-    </nav>
+<div class="app-container">
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="fas fa-skull me-2"></i>
+        WH40K Auction House
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/auctions" routerLinkActive="active">Auctions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/my-bids" routerLinkActive="active">My Bids</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/create-auction" routerLinkActive="active">Create Auction</a>
+          </li>
+        </ul>
+        
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown" *ngIf="authService.isLoggedIn()">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user me-1"></i>
+              {{ authService.user()?.username || 'User' }}
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+              <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#" (click)="logout()">Logout</a></li>
+            </ul>
+          </li>
+          <li class="nav-item" *ngIf="!authService.isLoggedIn()">
+            <a class="nav-link" routerLink="/login">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-    <main>
-        <router-outlet></router-outlet>
-    </main>
+  <!-- Main Content -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-light py-4 mt-auto">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>WH40K Auction House</h5>
+          <p class="mb-0">The Emperor's finest collectibles and artifacts</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="mb-0">&copy; 2024 WH40K Auction House. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
 </div>

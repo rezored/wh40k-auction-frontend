@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -8,16 +9,12 @@ export class AuthService {
 
     constructor(private http: HttpClient) { }
 
-    register(email: string, password: string, username: string) {
+    register(email: string, password: string, username: string): Observable<any> {
         return this.http.post('/api/auth/register', { email, password, username });
     }
 
-    login(email: string, password: string) {
-        return this.http.post<{ access_token: string, user: any }>('/api/auth/login', { email, password })
-            .subscribe(res => {
-                localStorage.setItem('token', res.access_token);
-                this.userSignal.set(res.user);
-            });
+    login(email: string, password: string): Observable<{ access_token: string, user: any }> {
+        return this.http.post<{ access_token: string, user: any }>('http://localhost:3000/api/v1/auth/login', { email, password });
     }
 
     logout() {

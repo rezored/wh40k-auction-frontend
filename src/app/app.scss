@@ -1,0 +1,24 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #ffd700 !important;
+}
+
+.nav-link.active {
+  color: #ffd700 !important;
+}
+
+.dropdown-item:hover {
+  background-color: #343a40;
+  color: #ffd700;
+}
