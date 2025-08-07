@@ -1,100 +1,405 @@
+// Global Styles for WH40K Auction House
+body {
+  background: #1a1a2e;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+}
+
+// App Container
 .app-container {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background: #1a1a2e;
 }
 
+// Debug Info (remove in production)
+.debug-info {
+  background: #0f3460 !important;
+  color: #ffffff !important;
+  border: 1px solid #e94560;
+  
+  .btn-outline-dark {
+    background: #e94560;
+    border-color: #e94560;
+    color: #ffffff;
+    
+    &:hover {
+      background: #c44569;
+      border-color: #c44569;
+    }
+  }
+}
+
+// Navigation
+.navbar {
+  background: #16213e !important;
+  border-bottom: 1px solid #0f3460;
+  
+  .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    
+    &:hover {
+      color: #e94560 !important;
+    }
+  }
+  
+  .navbar-nav {
+    .nav-link {
+      color: #b8b8b8 !important;
+      
+      &:hover, &.active {
+        color: #ffffff !important;
+      }
+    }
+  }
+  
+  .navbar-toggler {
+    border-color: #0f3460;
+    
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+  }
+}
+
+// Dropdown Styles
+.dropdown-menu {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  .dropdown-item {
+    color: #b8b8b8;
+    
+    &:hover {
+      background: #0f3460;
+      color: #ffffff;
+    }
+  }
+  
+  .dropdown-divider {
+    border-color: #0f3460;
+  }
+}
+
+// Main Content
 .main-content {
-  flex: 1;
-  padding: 0;
+  background: #1a1a2e;
+  min-height: calc(100vh - 200px);
 }
 
+// Page Transitions
 .page-transition-container {
-  position: relative;
-  min-height: 100vh;
+  background: #1a1a2e;
 }
 
-/* Simple Page Transition Animation */
-.page-transition-container > * {
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+// Loading Overlay
+.route-loading-overlay {
+  background: rgba(26, 26, 46, 0.9);
+  
+  .lazy-loading-spinner {
+    border: 4px solid #0f3460;
+    border-top: 4px solid #e94560;
   }
 }
 
-/* Simple Loading State */
-.lazy-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
+// Footer
+.footer {
+  background: #16213e !important;
+  border-top: 1px solid #0f3460;
+  
+  h5 {
+    color: #ffffff;
+  }
+  
+  p {
+    color: #b8b8b8;
+  }
 }
 
-.lazy-loading-spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #0d6efd;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+// Form Controls
+.form-control, .form-select {
+  background: #1a1a2e;
+  border: 2px solid #0f3460;
+  color: #ffffff;
+  
+  &:focus {
+    background: #16213e;
+    border-color: #e94560;
+    box-shadow: 0 0 0 0.2rem rgba(233, 69, 96, 0.25);
+  }
+  
+  &::placeholder {
+    color: #6c757d;
+  }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.form-select option {
+  background: #16213e;
+  color: #ffffff;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+// Buttons
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  
+  &.btn-primary {
+    background: linear-gradient(135deg, #e94560 0%, #c44569 100%);
+    border: none;
+    color: #ffffff;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+    }
+    
+    &:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+  
+  &.btn-secondary {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: #ffffff;
+    
+    &:hover {
+      background: #5a6268;
+      border-color: #545b62;
+    }
+  }
+  
+  &.btn-success {
+    background: #28a745;
+    border-color: #28a745;
+    
+    &:hover {
+      background: #218838;
+      border-color: #1e7e34;
+    }
+  }
+  
+  &.btn-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    
+    &:hover {
+      background: #c82333;
+      border-color: #bd2130;
+    }
+  }
 }
 
-/* Enhanced focus states for accessibility */
-.nav-link:focus,
-.btn:focus,
-.form-control:focus {
-  outline: 2px solid #0d6efd;
+// Cards
+.card {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  .card-header {
+    background: #0f3460;
+    border-bottom: 1px solid #0f3460;
+    color: #ffffff;
+  }
+  
+  .card-body {
+    color: #ffffff;
+  }
+}
+
+// Alerts
+.alert {
+  border-radius: 8px;
+  
+  &.alert-info {
+    background: #0f3460;
+    color: #ffffff;
+    border: 1px solid #0f3460;
+  }
+  
+  &.alert-warning {
+    background: #fd7e14;
+    color: #ffffff;
+    border: 1px solid #fd7e14;
+  }
+  
+  &.alert-danger {
+    background: #dc3545;
+    color: #ffffff;
+    border: 1px solid #dc3545;
+  }
+  
+  &.alert-success {
+    background: #28a745;
+    color: #ffffff;
+    border: 1px solid #28a745;
+  }
+}
+
+// Badges
+.badge {
+  &.bg-success {
+    background: #28a745 !important;
+  }
+  
+  &.bg-warning {
+    background: #ffc107 !important;
+    color: #212529 !important;
+  }
+  
+  &.bg-danger {
+    background: #dc3545 !important;
+  }
+  
+  &.bg-info {
+    background: #17a2b8 !important;
+  }
+}
+
+// Tables
+.table {
+  color: #ffffff;
+  
+  th {
+    background: #0f3460;
+    border-color: #0f3460;
+    color: #ffffff;
+  }
+  
+  td {
+    border-color: #0f3460;
+  }
+}
+
+// Pagination
+.pagination {
+  .page-link {
+    background: #16213e;
+    border-color: #0f3460;
+    color: #b8b8b8;
+    
+    &:hover {
+      background: #0f3460;
+      color: #ffffff;
+    }
+  }
+  
+  .page-item.active .page-link {
+    background: #e94560;
+    border-color: #e94560;
+  }
+}
+
+// Modal
+.modal-content {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  
+  .modal-header {
+    background: #0f3460;
+    border-bottom: 1px solid #0f3460;
+    color: #ffffff;
+    
+    .btn-close {
+      filter: invert(1);
+    }
+  }
+  
+  .modal-body {
+    color: #ffffff;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #0f3460;
+  }
+}
+
+// Tooltips
+.tooltip {
+  .tooltip-inner {
+    background: #16213e;
+    color: #ffffff;
+  }
+  
+  .tooltip-arrow::before {
+    border-top-color: #16213e;
+  }
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0f3460;
+  border-radius: 4px;
+  
+  &:hover {
+    background: #e94560;
+  }
+}
+
+// Selection
+::selection {
+  background: #e94560;
+  color: #ffffff;
+}
+
+// Focus styles
+:focus {
+  outline: 2px solid #e94560;
   outline-offset: 2px;
 }
 
-/* Simple loading overlay */
-.route-loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+// Links
+a {
+  color: #e94560;
+  
+  &:hover {
+    color: #c44569;
+  }
 }
 
-.route-loading-overlay.active {
-  opacity: 1;
-  visibility: visible;
+// Text colors
+.text-muted {
+  color: #b8b8b8 !important;
 }
 
-.navbar-brand {
-  font-size: 1.5rem;
-  color: #ffd700 !important;
+.text-light {
+  color: #ffffff !important;
 }
 
-.nav-link.active {
-  color: #ffd700 !important;
+// Background utilities
+.bg-dark {
+  background: #16213e !important;
 }
 
-.dropdown-item:hover {
-  background-color: #343a40;
-  color: #ffd700;
+.bg-light {
+  background: #1a1a2e !important;
+}
+
+// Border utilities
+.border-dark {
+  border-color: #0f3460 !important;
+}
+
+// Responsive utilities
+@media (max-width: 767.98px) {
+  .navbar-nav {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+    margin-top: 1rem;
+    padding: 1rem;
+  }
 }

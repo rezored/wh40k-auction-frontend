@@ -20,8 +20,6 @@ export class AuthService {
         this.checkExistingToken();
         // Schedule periodic token expiration checks
         this.scheduleTokenExpirationCheck();
-        // Make service available globally for debugging
-        (window as any).authService = this;
     }
 
     private scheduleTokenExpirationCheck() {
@@ -29,7 +27,6 @@ export class AuthService {
         setInterval(() => {
             const token = this.getToken();
             if (token && this.isTokenExpired(token)) {
-                console.log('Token expired during periodic check, logging out...');
                 this.logout();
             }
         }, 60000); // Check every minute
@@ -39,7 +36,6 @@ export class AuthService {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         
         if (token && this.isTokenExpired(token)) {
-            console.log('Token is expired in getAuthHeaders, clearing...');
             this.clearToken();
             this.userSignal.set(null);
             return new HttpHeaders({
@@ -76,11 +72,6 @@ export class AuthService {
         const currentTime = Math.floor(Date.now() / 1000);
         const isExpired = decoded.exp < currentTime;
         
-        if (isExpired) {
-            console.log('Token expired at:', new Date(decoded.exp * 1000));
-            console.log('Current time:', new Date());
-        }
-        
         return isExpired;
     }
 
@@ -91,7 +82,6 @@ export class AuthService {
         if (token) {
             // Check if token is expired
             if (this.isTokenExpired(token)) {
-                console.log('Stored token is expired, clearing...');
                 this.clearToken();
                 this.userSignal.set(null);
                 this.loginStatusSignal.set(false);
@@ -109,7 +99,6 @@ export class AuthService {
     private validateTokenLocally(token: string) {
         // Check if token is expired first
         if (this.isTokenExpired(token)) {
-            console.log('Token is expired, clearing...');
             this.clearToken();
             this.userSignal.set(null);
             this.loginStatusSignal.set(false);
@@ -229,7 +218,6 @@ export class AuthService {
             
             // Check for token expiration
             if (this.isTokenExpired(token)) {
-                console.log('Token is expired in isUserLoggedIn, clearing...');
                 this.clearToken();
                 this.userSignal.set(null);
                 return false;

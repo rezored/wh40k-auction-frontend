@@ -1,137 +1,176 @@
-<div class="container" *ngIf="auction">
-  <div class="row">
-    <!-- Auction Images -->
-    <div class="col-lg-6 mb-4">
-      <div class="auction-images">
-        <img [src]="auction.imageUrl || 'assets/placeholder.jpg'" 
-             [alt]="auction.title" 
-             class="main-image">
-      </div>
+@if (auction) {
+<div class="auction-detail-container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/auctions">Auctions</a></li>
+        <li class="breadcrumb-item"><a routerLink="/auctions">{{ auction.category | titlecase }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ auction.title }}</li>
+      </ol>
     </div>
+  </nav>
 
-    <!-- Auction Info -->
-    <div class="col-lg-6">
-      <div class="auction-info">
-        <h1 class="auction-title">{{ auction.title }}</h1>
-        <p class="auction-description">{{ auction.description }}</p>
-        
-        <div class="auction-meta">
-          <div class="row">
-            <div class="col-6">
-              <small class="text-muted">Category</small>
-              <div class="fw-bold">{{ auction.category | titlecase }}</div>
-            </div>
-            <div class="col-6">
-              <small class="text-muted">Condition</small>
-              <div class="fw-bold">{{ auction.condition | titlecase }}</div>
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-6">
-              <small class="text-muted">Seller</small>
-              <div class="fw-bold">{{ auction.owner.username }}</div>
-            </div>
-            <div class="col-6">
-              <small class="text-muted">Created</small>
-              <div class="fw-bold">{{ auction.createdAt | date:'short' }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Price and Bidding -->
-        <div class="bidding-section mt-4">
-          <div class="current-price">
-            <small class="text-muted">Current Price</small>
-            <div class="price-display">{{ formatPrice(auction.currentPrice) }}</div>
-            <small class="text-muted">Starting Price: {{ formatPrice(auction.startingPrice) }}</small>
-          </div>
-
-          <div class="time-remaining mt-3">
-            <small class="text-muted">Time Remaining</small>
-            <div class="countdown" [class.ending-soon]="isEndingSoon()">
-              {{ getTimeRemaining() }}
-            </div>
-          </div>
-
-          <!-- Bid Form -->
-          <div class="bid-form mt-4" *ngIf="canBid()">
-            <h5>Place Your Bid</h5>
-            <div class="input-group">
-              <span class="input-group-text">{{ currencyService.getCurrentCurrency().symbol }}</span>
-              <input type="number" 
-                     class="form-control" 
-                     [(ngModel)]="bidAmount" 
-                     [min]="auction.currentPrice + 1"
-                     placeholder="Enter bid amount">
-              <button class="btn btn-primary" 
-                      (click)="placeBid()" 
-                      [disabled]="!bidAmount || bidAmount <= auction.currentPrice">
-                Place Bid
-              </button>
-            </div>
-            <small class="text-muted">Minimum bid: {{ formatPrice(auction.currentPrice + 1) }}</small>
-          </div>
-
-          <div class="mt-3" *ngIf="!canBid()">
-            <div class="alert alert-info" *ngIf="!authService.isUserLoggedIn()">
-              <i class="fas fa-info-circle me-2"></i>
-              Please log in to place a bid
-            </div>
-            <div class="alert alert-warning" *ngIf="auction.status === 'ended'">
-              <i class="fas fa-clock me-2"></i>
-              This auction has ended
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bids History -->
-  <div class="row mt-5">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">
-            <i class="fas fa-history me-2"></i>
-            Bid History ({{ auction.bids.length || 0 }} bids)
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="bid-list" *ngIf="auction.bids && auction.bids.length > 0">
-            <div class="bid-item" *ngFor="let bid of auction.bids; trackBy: trackBid">
-              <div class="row align-items-center">
-                <div class="col-md-3">
-                  <div class="bidder">{{ bid.bidder.username }}</div>
-                  <small class="text-muted">{{ bid.createdAt | date:'short' }}</small>
-                </div>
-                <div class="col-md-3">
-                  <div class="bid-amount">{{ formatPrice(bid.amount) }}</div>
-                </div>
-                <div class="col-md-6">
-                  <div class="bid-status" [class.winning]="isWinningBid(bid)">
-                    <span *ngIf="isWinningBid(bid)" class="badge bg-success">
-                      <i class="fas fa-crown me-1"></i>Winning
-                    </span>
-                  </div>
-                </div>
+  <div class="container">
+    <div class="row">
+      <!-- Product Images Section -->
+      <div class="col-lg-7">
+        <div class="product-gallery">
+          <div class="main-image-container">
+            <img [src]="auction.imageUrl || 'https://via.placeholder.com/600x400/1a1a2e/ffffff?text=WH40K+Item'"
+                 [alt]="auction.title" 
+                 class="main-product-image">
+            <div class="image-overlay">
+              <div class="auction-status-badge" [class.ending-soon]="isEndingSoon()">
+                <i class="fas fa-clock me-1"></i>
+                {{ getTimeRemaining() }}
               </div>
             </div>
           </div>
-          <div class="text-center text-muted" *ngIf="!auction.bids || auction.bids.length === 0">
-            <i class="fas fa-inbox fa-2x mb-2"></i>
-            <p>No bids yet. Be the first to bid!</p>
+        </div>
+      </div>
+
+      <!-- Product Info & Pricing Section -->
+      <div class="col-lg-5">
+        <div class="product-info-card">
+          <!-- Title & Category -->
+          <div class="product-header">
+            <div class="category-badge">{{ auction.category | titlecase }}</div>
+            <h1 class="product-title">{{ auction.title }}</h1>
+            <div class="seller-info">
+              <i class="fas fa-user me-2"></i>
+              Sold by <strong>{{ auction.owner.username }}</strong>
+            </div>
+          </div>
+
+          <!-- Condition & Details -->
+          <div class="product-details">
+            <div class="detail-row">
+              <span class="detail-label">Condition:</span>
+              <span class="detail-value condition-badge" [class]="'condition-' + auction.condition">
+                {{ auction.condition | titlecase }}
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Created:</span>
+              <span class="detail-value">{{ auction.createdAt | date:'MMM dd, yyyy' }}</span>
+            </div>
+          </div>
+
+          <!-- Pricing Section -->
+          <div class="pricing-section">
+            <div class="current-price-display">
+              <div class="price-label">Current Price</div>
+              <div class="price-amount">{{ formatPrice(auction.currentPrice) }}</div>
+              <div class="starting-price">Starting: {{ formatPrice(auction.startingPrice) }}</div>
+            </div>
+
+            <!-- Bid Form -->
+            @if (canBid()) {
+            <div class="bid-form">
+              <div class="bid-input-group">
+                <div class="currency-symbol">{{ currencyService.getCurrentCurrency().symbol }}</div>
+                <input type="number" 
+                       class="bid-input" 
+                       [(ngModel)]="bidAmount" 
+                       [min]="auction.currentPrice + 1"
+                       placeholder="Enter your bid">
+                <button class="bid-button" 
+                        (click)="placeBid()" 
+                        [disabled]="!bidAmount || bidAmount <= auction.currentPrice">
+                  <i class="fas fa-gavel me-2"></i>
+                  Place Bid
+                </button>
+              </div>
+              <div class="min-bid-hint">Minimum bid: {{ formatPrice(auction.currentPrice + 1) }}</div>
+            </div>
+            }
+
+            <!-- Login/Status Messages -->
+            @if (!canBid()) {
+            <div class="status-messages">
+              @if (!authService.loginStatus()) {
+              <div class="alert-message login-required">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                Please <a routerLink="/auth/login">log in</a> to place a bid
+              </div>
+              }
+              @if (auction.status === 'ended') {
+              <div class="alert-message auction-ended">
+                <i class="fas fa-clock me-2"></i>
+                This auction has ended
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Description -->
+          <div class="product-description">
+            <h4>Description</h4>
+            <p>{{ auction.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bid History Section -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="bid-history-card">
+          <div class="card-header">
+            <h3 class="section-title">
+              <i class="fas fa-history me-2"></i>
+              Bid History
+              <span class="bid-count">({{ auction.bids.length }} bids)</span>
+            </h3>
+          </div>
+          
+          <div class="bid-history-content">
+            @if (auction.bids && auction.bids.length > 0) {
+            <div class="bid-list">
+              @for (bid of auction.bids; track trackBid(bid)) {
+              <div class="bid-item">
+                <div class="bid-info">
+                  <div class="bidder-info">
+                    <div class="bidder-name">{{ bid.bidder.username }}</div>
+                    <div class="bid-time">{{ bid.createdAt | date:'MMM dd, HH:mm' }}</div>
+                  </div>
+                  <div class="bid-amount">{{ formatPrice(bid.amount) }}</div>
+                  <div class="bid-status">
+                    @if (isWinningBid(bid)) {
+                    <span class="winning-badge">
+                      <i class="fas fa-crown me-1"></i>Winning
+                    </span>
+                    }
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+            } @else {
+            <div class="no-bids-message">
+              <div class="empty-state">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <h4>No bids yet</h4>
+                <p>Be the first to place a bid on this item!</p>
+              </div>
+            </div>
+            }
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+}
 
 <!-- Loading State -->
-<div class="container text-center" *ngIf="loading">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+@if (loading) {
+<div class="loading-container">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading auction details...</p>
   </div>
-  <p class="mt-2">Loading auction details...</p>
-</div> 
+</div>
+}

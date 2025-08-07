@@ -4,8 +4,8 @@
         <div class="lazy-loading-spinner"></div>
     </div>
 
-    <!-- Debug Info (remove in production) -->
-    <div class="debug-info bg-warning p-2" style="font-size: 12px;">
+    <!-- Debug Info (only show in debug mode) -->
+    <div class="debug-info bg-warning p-2" style="font-size: 12px;" *ngIf="environment.debugMode">
         <strong>Debug:</strong> 
         Logged in: {{ authService.loginStatus() }} | 
         User: {{ authService.user()?.username || 'None' }} | 
@@ -28,7 +28,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" routerLink="/auctions" routerLinkActive="active">Auctions</a>
+                        <a class="nav-link" routerLink="/auctions" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Auctions</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" routerLink="/bids/my-bids" routerLinkActive="active">My Bids</a>
