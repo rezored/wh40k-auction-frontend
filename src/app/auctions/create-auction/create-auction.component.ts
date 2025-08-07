@@ -32,7 +32,7 @@ export class CreateAuctionComponent {
   ) {}
 
   onSubmit() {
-    if (!this.authService.isLoggedIn()) {
+    if (!this.authService.isUserLoggedIn()) {
       alert('Please log in to create an auction');
       return;
     }

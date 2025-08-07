@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuctionService, Auction, Bid } from '../../services/auction.service';
 import { AuthService } from '../../services/auth.service';
+import { CurrencyService } from '../../services/currency.service';
 
 @Component({
   selector: 'app-auction-detail',
@@ -21,7 +22,8 @@ export class AuctionDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private auctionService: AuctionService,
-    public authService: AuthService
+    public authService: AuthService,
+    public currencyService: CurrencyService
   ) {}
 
   ngOnInit() {
@@ -51,12 +53,9 @@ export class AuctionDetailComponent implements OnInit {
 
     this.auctionService.placeBid(this.auction.id, this.bidAmount).subscribe({
       next: (bid) => {
-        if (this.auction) {
-          this.auction.bids = this.auction.bids || [];
-          this.auction.bids.unshift(bid);
-          this.auction.currentPrice = this.bidAmount;
-          this.bidAmount = 0;
-        }
+        // Refresh the auction data from the server to get the updated state
+        this.loadAuction(this.auction!.id);
+        this.bidAmount = 0;
       },
       error: (error) => {
         console.error('Error placing bid:', error);
@@ -66,9 +65,9 @@ export class AuctionDetailComponent implements OnInit {
   }
 
   canBid(): boolean {
-    return this.authService.isLoggedIn() && 
+    return this.authService.isUserLoggedIn() && 
            this.auction?.status === 'active' && 
-           this.auction?.seller.id !== this.authService.user()?.id;
+           this.auction?.owner?.id !== this.authService.user()?.id;
   }
 
   isEndingSoon(): boolean {
@@ -118,7 +117,7 @@ export class AuctionDetailComponent implements OnInit {
       imageUrl: 'https://via.placeholder.com/600x400/1a1a2e/ffffff?text=Space+Marine+Captain',
       category: 'miniatures',
       condition: 'excellent',
-      seller: { id: '1', username: 'WarhammerCollector' },
+      owner: { id: '1', username: 'WarhammerCollector' },
       bids: [
         { id: '1', amount: 275, bidder: { id: '2', username: 'AdeptusFan' }, createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000) },
         { id: '2', amount: 250, bidder: { id: '3', username: 'SpaceMarineLover' }, createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000) },
@@ -127,5 +126,9 @@ export class AuctionDetailComponent implements OnInit {
       status: 'active',
       createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     };
+  }
+
+  formatPrice(amountEUR: number): string {
+    return this.currencyService.formatPriceRange(amountEUR);
   }
 } 

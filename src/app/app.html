@@ -1,67 +1,86 @@
 <div class="app-container">
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="#">
-        <i class="fas fa-skull me-2"></i>
-        WH40K Auction House
-      </a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/auctions" routerLinkActive="active">Auctions</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/my-bids" routerLinkActive="active">My Bids</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/create-auction" routerLinkActive="active">Create Auction</a>
-          </li>
-        </ul>
-        
-        <ul class="navbar-nav">
-          <li class="nav-item dropdown" *ngIf="authService.isLoggedIn()">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fas fa-user me-1"></i>
-              {{ authService.user()?.username || 'User' }}
+    <!-- Loading Overlay for Route Transitions -->
+    <div class="route-loading-overlay" [class.active]="routeTransitionService.isLoading$ | async">
+        <div class="lazy-loading-spinner"></div>
+    </div>
+
+    <!-- Debug Info (remove in production) -->
+    <div class="debug-info bg-warning p-2" style="font-size: 12px;">
+        <strong>Debug:</strong> 
+        Logged in: {{ authService.loginStatus() }} | 
+        User: {{ authService.user()?.username || 'None' }} | 
+        Token: {{ getTokenStatus() }}
+        <button class="btn btn-sm btn-outline-dark ms-2" (click)="checkAuthState()">Check Auth</button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" routerLink="/auctions">
+                <i class="fas fa-skull me-2"></i>
+                WH40K Auction House
             </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
-              <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#" (click)="logout()">Logout</a></li>
-            </ul>
-          </li>
-          <li class="nav-item" *ngIf="!authService.isLoggedIn()">
-            <a class="nav-link" routerLink="/login">Login</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <router-outlet></router-outlet>
-  </main>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-  <!-- Footer -->
-  <footer class="footer bg-dark text-light py-4 mt-auto">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <h5>WH40K Auction House</h5>
-          <p class="mb-0">The Emperor's finest collectibles and artifacts</p>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/auctions" routerLinkActive="active">Auctions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/bids/my-bids" routerLinkActive="active">My Bids</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/auctions/create" routerLinkActive="active">Create Auction</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown" *ngIf="authService.loginStatus()">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i>
+                            {{ authService.user()?.username || 'User' }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+                            <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" (click)="logout($event)">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" *ngIf="!authService.loginStatus()">
+                        <a class="nav-link" routerLink="/auth/login">Login</a>
+                    </li>
+                    <li class="nav-item" *ngIf="!authService.loginStatus()">
+                        <a class="nav-link" routerLink="/auth/register">Register</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="col-md-6 text-md-end">
-          <p class="mb-0">&copy; 2024 WH40K Auction House. All rights reserved.</p>
+    </nav>
+
+    <!-- Main Content with Page Transitions -->
+    <main class="main-content">
+        <div class="page-transition-container">
+            <router-outlet></router-outlet>
         </div>
-      </div>
-    </div>
-  </footer>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-light py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>WH40K Auction House</h5>
+                    <p class="mb-0">The Emperor's finest collectibles and artifacts</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2024 WH40K Auction House. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>

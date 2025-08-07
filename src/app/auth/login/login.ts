@@ -42,6 +42,17 @@ import { AuthService } from '../../services/auth.service';
                          placeholder="Enter your password">
                 </div>
                 
+                <div class="mb-3 form-check">
+                  <input type="checkbox" 
+                         class="form-check-input" 
+                         id="rememberMe"
+                         [(ngModel)]="rememberMe" 
+                         name="rememberMe">
+                  <label class="form-check-label" for="rememberMe">
+                    Remember me
+                  </label>
+                </div>
+                
                 <div class="d-grid">
                   <button type="submit" 
                           class="btn btn-primary btn-lg" 
@@ -54,7 +65,7 @@ import { AuthService } from '../../services/auth.service';
                 
                 <div class="text-center mt-3">
                   <p class="mb-0">Don't have an account? 
-                    <a routerLink="/register" class="text-decoration-none">Register here</a>
+                    <a routerLink="/auth/register" class="text-decoration-none">Register here</a>
                   </p>
                 </div>
               </form>
@@ -91,11 +102,17 @@ import { AuthService } from '../../services/auth.service';
     .btn-primary:hover {
       background: linear-gradient(135deg, #16213e, #0f3460);
     }
+
+    .form-check-input:checked {
+      background-color: #1a1a2e;
+      border-color: #1a1a2e;
+    }
   `]
 })
 export class LoginComponent {
   email = '';
   password = '';
+  rememberMe = true; // Set to true by default for better persistence
   loading = false;
 
   constructor(
@@ -104,15 +121,18 @@ export class LoginComponent {
   ) {}
 
   onSubmit() {
+    console.log('Login attempt for email:', this.email, 'Remember me:', this.rememberMe);
     this.loading = true;
     this.authService.login(this.email, this.password).subscribe({
-      next: () => {
+      next: (response: { access_token: string, user: any }) => {
+        console.log('Login successful, response:', response);
+        this.authService.setUserData(response.access_token, response.user, this.rememberMe);
         this.loading = false;
         this.router.navigate(['/auctions']);
       },
       error: (error: any) => {
-        this.loading = false;
         console.error('Login error:', error);
+        this.loading = false;
         alert('Login failed. Please check your credentials.');
       }
     });

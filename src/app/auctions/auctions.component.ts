@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuctionService, Auction } from '../services/auction.service';
+import { AuthService } from '../services/auth.service';
+import { CurrencyService } from '../services/currency.service';
 
 @Component({
     selector: 'app-auctions',
@@ -21,7 +23,11 @@ export class AuctionsComponent implements OnInit {
     selectedPriceRange = '';
     sortBy = 'ending-soon';
 
-    constructor(private auctionService: AuctionService) { }
+    constructor(
+        private auctionService: AuctionService,
+        private authService: AuthService,
+        public currencyService: CurrencyService
+    ) { }
 
     ngOnInit() {
         this.loadAuctions();
@@ -33,6 +39,8 @@ export class AuctionsComponent implements OnInit {
             next: (auctions) => {
                 this.auctions = auctions;
                 this.filterAuctions();
+                
+                // this.loadMockData();
                 this.loading = false;
             },
             error: (error) => {
@@ -124,6 +132,7 @@ export class AuctionsComponent implements OnInit {
     }
 
     loadMockData() {
+        console.log('Loading mock data');
         this.auctions = [
             {
                 id: '1',
@@ -135,7 +144,7 @@ export class AuctionsComponent implements OnInit {
                 imageUrl: 'https://via.placeholder.com/300x200/1a1a2e/ffffff?text=Space+Marine',
                 category: 'miniatures',
                 condition: 'excellent',
-                seller: { id: '1', username: 'WarhammerCollector' },
+                owner: { id: '1', username: 'WarhammerCollector' },
                 bids: [{ id: '1', amount: 275, bidder: { id: '2', username: 'AdeptusFan' }, createdAt: new Date() }],
                 status: 'active',
                 createdAt: new Date()
@@ -150,7 +159,7 @@ export class AuctionsComponent implements OnInit {
                 imageUrl: 'https://via.placeholder.com/300x200/16213e/ffffff?text=Codex',
                 category: 'books',
                 condition: 'mint',
-                seller: { id: '3', username: 'Bookworm' },
+                owner: { id: '3', username: 'Bookworm' },
                 bids: [],
                 status: 'active',
                 createdAt: new Date()
@@ -165,12 +174,24 @@ export class AuctionsComponent implements OnInit {
                 imageUrl: 'https://via.placeholder.com/300x200/0f3460/ffffff?text=Terrain',
                 category: 'terrain',
                 condition: 'good',
-                seller: { id: '4', username: 'TerrainMaster' },
+                owner: { id: '4', username: 'TerrainMaster' },
                 bids: [{ id: '2', amount: 350, bidder: { id: '5', username: 'GamerPro' }, createdAt: new Date() }],
                 status: 'active',
                 createdAt: new Date()
             }
         ];
         this.filterAuctions();
+    }
+
+    clearFilters() {
+        this.selectedCategory = '';
+        this.selectedStatus = '';
+        this.selectedPriceRange = '';
+        this.sortBy = 'ending-soon';
+        this.filterAuctions();
+    }
+
+    formatPrice(amountEUR: number): string {
+        return this.currencyService.formatPriceRange(amountEUR);
     }
 } 

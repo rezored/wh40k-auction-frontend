@@ -19,6 +19,43 @@ A modern auction house application for Warhammer 40,000 collectibles and miniatu
 - **HTTP Client**: Angular HttpClient with interceptors
 - **State Management**: Angular Signals
 
+## Environment Configuration
+
+The application uses environment files to manage different configurations:
+
+### Development Environment (`src/environments/environment.ts`)
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000/api/v1',
+  appName: 'WH40K Auction House',
+  version: '1.0.0'
+};
+```
+
+### Production Environment (`src/environments/environment.prod.ts`)
+```typescript
+export const environment = {
+  production: true,
+  apiUrl: 'https://api.wh40k-auction.com/api/v1', // Update with your production API
+  appName: 'WH40K Auction House',
+  version: '1.0.0'
+};
+```
+
+### Configuration Service
+
+The application uses a centralized `ConfigService` to manage all API endpoints and configuration:
+
+```typescript
+// Available endpoints
+configService.authEndpoints.login
+configService.authEndpoints.register
+configService.auctionEndpoints.list
+configService.auctionEndpoints.detail(id)
+configService.bidEndpoints.myBids
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -39,12 +76,16 @@ cd wh40k-auction-frontend
 npm install
 ```
 
-3. Start the development server:
+3. Configure environment:
+   - Update `src/environments/environment.ts` for development
+   - Update `src/environments/environment.prod.ts` for production
+
+4. Start the development server:
 ```bash
 npm start
 ```
 
-4. Open your browser and navigate to `http://localhost:4200`
+5. Open your browser and navigate to `http://localhost:4200`
 
 ## Project Structure
 
@@ -62,10 +103,14 @@ src/
 │   ├── profile/              # User profile
 │   ├── services/             # API services
 │   │   ├── auth.service.ts
-│   │   └── auction.service.ts
+│   │   ├── auction.service.ts
+│   │   └── config.service.ts
 │   ├── app.component.ts      # Main app component
 │   ├── app.config.ts         # App configuration
 │   └── app.routes.ts         # Routing configuration
+├── environments/              # Environment configuration
+│   ├── environment.ts        # Development environment
+│   └── environment.prod.ts   # Production environment
 ├── styles.scss               # Global styles
 └── main.ts                   # Application entry point
 ```
@@ -102,10 +147,28 @@ src/
 
 ## API Integration
 
-The application is designed to work with a backend API. Update the API endpoints in the services:
+The application is designed to work with a backend API. Update the API endpoints in the environment files:
 
-- `src/app/services/auth.service.ts` - Authentication endpoints
-- `src/app/services/auction.service.ts` - Auction and bidding endpoints
+- `src/environments/environment.ts` - Development API endpoints
+- `src/environments/environment.prod.ts` - Production API endpoints
+
+### API Endpoints Structure
+
+```typescript
+// Authentication
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+
+// Auctions
+GET /api/v1/auctions
+GET /api/v1/auctions/:id
+POST /api/v1/auctions
+GET /api/v1/auctions/my-auctions
+
+// Bidding
+POST /api/v1/auctions/:id/bids
+GET /api/v1/bids/my-bids
+```
 
 ## Styling
 
