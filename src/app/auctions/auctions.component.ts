@@ -40,13 +40,11 @@ export class AuctionsComponent implements OnInit {
                 this.auctions = auctions;
                 this.filterAuctions();
                 
-                // this.loadMockData();
                 this.loading = false;
             },
             error: (error) => {
                 console.error('Error loading auctions:', error);
                 this.loading = false;
-                this.loadMockData();
             }
         });
     }
@@ -59,14 +57,15 @@ export class AuctionsComponent implements OnInit {
         }
 
         if (this.selectedStatus) {
-            if (this.selectedStatus === 'ending-soon') {
-                const now = new Date();
-                const oneDay = 24 * 60 * 60 * 1000;
-                filtered = filtered.filter(auction => {
-                    const endTime = new Date(auction.endTime);
-                    return endTime.getTime() - now.getTime() <= oneDay && auction.status === 'active';
-                });
-            } else {
+                    if (this.selectedStatus === 'ending-soon') {
+            const now = new Date();
+            const oneDay = 24 * 60 * 60 * 1000;
+            filtered = filtered.filter(auction => {
+                if (!auction.endTime) return false; // Skip direct sales for ending-soon filter
+                const endTime = new Date(auction.endTime);
+                return endTime.getTime() - now.getTime() <= oneDay && auction.status === 'active';
+            });
+        } else {
                 filtered = filtered.filter(auction => auction.status === this.selectedStatus);
             }
         }
@@ -84,7 +83,10 @@ export class AuctionsComponent implements OnInit {
 
         switch (this.sortBy) {
             case 'ending-soon':
-                filtered.sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime());
+                filtered.sort((a, b) => {
+                    if (!a.endTime || !b.endTime) return 0; // Skip direct sales in ending-soon sort
+                    return new Date(a.endTime).getTime() - new Date(b.endTime).getTime();
+                });
                 break;
             case 'price-low':
                 filtered.sort((a, b) => a.currentPrice - b.currentPrice);
@@ -105,6 +107,7 @@ export class AuctionsComponent implements OnInit {
 
     getStatusClass(auction: Auction): string {
         if (auction.status === 'ended') return 'badge-ended';
+        if (!auction.endTime) return 'badge-active'; // Direct sales are always active
 
         const now = new Date();
         const endTime = new Date(auction.endTime);
@@ -119,6 +122,7 @@ export class AuctionsComponent implements OnInit {
 
     getStatusText(auction: Auction): string {
         if (auction.status === 'ended') return 'ENDED';
+        if (!auction.endTime) return 'ACTIVE'; // Direct sales are always active
 
         const now = new Date();
         const endTime = new Date(auction.endTime);
@@ -129,58 +133,6 @@ export class AuctionsComponent implements OnInit {
         }
 
         return 'ACTIVE';
-    }
-
-    loadMockData() {
-        console.log('Loading mock data');
-        this.auctions = [
-            {
-                id: '1',
-                title: 'Space Marine Captain - Limited Edition',
-                description: 'Rare limited edition Space Marine Captain miniature from the 2023 collector\'s series. Painted to display quality with custom base.',
-                startingPrice: 150,
-                currentPrice: 275,
-                endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-                imageUrl: 'https://via.placeholder.com/300x200/1a1a2e/ffffff?text=Space+Marine',
-                category: 'miniatures',
-                condition: 'excellent',
-                owner: { id: '1', username: 'WarhammerCollector' },
-                bids: [{ id: '1', amount: 275, bidder: { id: '2', username: 'AdeptusFan' }, createdAt: new Date() }],
-                status: 'active',
-                createdAt: new Date()
-            },
-            {
-                id: '2',
-                title: 'Codex: Space Marines 9th Edition',
-                description: 'Mint condition Codex: Space Marines for 9th edition. Includes all supplements and never used.',
-                startingPrice: 45,
-                currentPrice: 67,
-                endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-                imageUrl: 'https://via.placeholder.com/300x200/16213e/ffffff?text=Codex',
-                category: 'books',
-                condition: 'mint',
-                owner: { id: '3', username: 'Bookworm' },
-                bids: [],
-                status: 'active',
-                createdAt: new Date()
-            },
-            {
-                id: '3',
-                title: 'Imperial Terrain Set - Complete',
-                description: 'Complete Imperial terrain set including buildings, walls, and decorative elements. Perfect for tabletop gaming.',
-                startingPrice: 200,
-                currentPrice: 350,
-                endTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-                imageUrl: 'https://via.placeholder.com/300x200/0f3460/ffffff?text=Terrain',
-                category: 'terrain',
-                condition: 'good',
-                owner: { id: '4', username: 'TerrainMaster' },
-                bids: [{ id: '2', amount: 350, bidder: { id: '5', username: 'GamerPro' }, createdAt: new Date() }],
-                status: 'active',
-                createdAt: new Date()
-            }
-        ];
-        this.filterAuctions();
     }
 
     clearFilters() {

@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { RouteTransitionService } from './services/route-transition.service';
 import { environment } from '../environments/environment';
+import { ToasterComponent } from './shared/toast/toaster.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
+  imports: [RouterOutlet, RouterModule, CommonModule, ToasterComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']
 })

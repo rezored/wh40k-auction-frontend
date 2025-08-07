@@ -49,6 +49,15 @@ export class ConfigService {
     };
   }
 
+  get offerEndpoints() {
+    return {
+      makeOffer: (auctionId: string) => `${this.apiUrl}/auctions/${auctionId}/offers`,
+      respondToOffer: (offerId: string) => `${this.apiUrl}/offers/${offerId}/respond`,
+      myOffers: `${this.apiUrl}/offers/my-offers`,
+      receivedOffers: (auctionId: string) => `${this.apiUrl}/auctions/${auctionId}/offers`
+    };
+  }
+
   getHeaders(token?: string) {
     const headers: { [key: string]: string } = {
       'Content-Type': 'application/json'

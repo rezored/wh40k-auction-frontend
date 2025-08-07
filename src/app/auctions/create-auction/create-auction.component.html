@@ -69,19 +69,50 @@
               </div>
             </div>
 
+            <!-- Sale Type Selection -->
+            <div class="form-section">
+              <div class="section-header">
+                <h3><i class="fas fa-handshake me-2"></i>Sale Type</h3>
+                <p>Choose how you want to sell your item</p>
+              </div>
+              
+              <div class="sale-type-selector">
+                <div class="sale-type-option" [class.selected]="saleType === 'auction'">
+                  <input type="radio" id="auction" name="saleType" value="auction" [(ngModel)]="saleType">
+                  <label for="auction" class="sale-type-label">
+                    <i class="fas fa-gavel me-2"></i>
+                    <div class="sale-type-content">
+                      <strong>Auction</strong>
+                      <small>Let bidders compete for your item</small>
+                    </div>
+                  </label>
+                </div>
+                <div class="sale-type-option" [class.selected]="saleType === 'direct'">
+                  <input type="radio" id="direct" name="saleType" value="direct" [(ngModel)]="saleType">
+                  <label for="direct" class="sale-type-label">
+                    <i class="fas fa-handshake me-2"></i>
+                    <div class="sale-type-content">
+                      <strong>Direct Sale</strong>
+                      <small>Accept or reject offers from buyers</small>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- Pricing & Condition Section -->
             <div class="form-section">
               <div class="section-header">
                 <h3><i class="fas fa-tags me-2"></i>Pricing & Condition</h3>
-                <p>Set your starting price and describe the item's condition</p>
+                <p>Set your price and describe the item's condition</p>
               </div>
               
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Starting Price *</label>
+                    <label class="form-label">{{ saleType === 'auction' ? 'Starting Price' : 'Asking Price' }} *</label>
                     <div class="price-input-group">
-                      <span class="currency-symbol">€</span>
+                      <span class="currency-symbol">{{ currencyService.getCurrentCurrency().symbol }}</span>
                       <input type="number" 
                              class="form-control" 
                              [(ngModel)]="auction.startingPrice" 
@@ -89,9 +120,11 @@
                              min="1"
                              step="0.01"
                              required
-                             placeholder="0.00">
+                             [placeholder]="saleType === 'auction' ? 'Enter starting price' : 'Enter your asking price'">
                     </div>
-                    <div class="form-hint">Set a competitive starting price to attract initial bids</div>
+                    <div class="form-hint">
+                      {{ saleType === 'auction' ? 'Set a competitive starting price to attract initial bids' : 'Buyers can make offers below this price' }}
+                    </div>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -112,9 +145,34 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Direct sale-specific fields -->
+              @if (saleType === 'direct') {
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">Minimum Offer *</label>
+                    <div class="price-input-group">
+                      <span class="currency-symbol">{{ currencyService.getCurrentCurrency().symbol }}</span>
+                      <input type="number" 
+                             class="form-control" 
+                             [(ngModel)]="minOffer" 
+                             name="minOffer"
+                             min="0.01"
+                             step="0.01"
+                             [max]="auction.startingPrice"
+                             required
+                             placeholder="Enter minimum acceptable offer">
+                    </div>
+                    <div class="form-hint">Buyers must offer at least this amount</div>
+                  </div>
+                </div>
+              </div>
+              }
             </div>
 
             <!-- Auction Settings Section -->
+            @if (saleType === 'auction') {
             <div class="form-section">
               <div class="section-header">
                 <h3><i class="fas fa-clock me-2"></i>Auction Settings</h3>
@@ -146,6 +204,46 @@
                 </div>
               </div>
             </div>
+            }
+
+            <!-- Direct Sale Settings Section -->
+            @if (saleType === 'direct') {
+            <div class="form-section">
+              <div class="section-header">
+                <h3><i class="fas fa-cog me-2"></i>Direct Sale Settings</h3>
+                <p>Configure your direct sale preferences</p>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">Image URL (Optional)</label>
+                    <input type="url" 
+                           class="form-control" 
+                           [(ngModel)]="auction.imageUrl" 
+                           name="imageUrl"
+                           placeholder="https://example.com/image.jpg">
+                    <div class="form-hint">High-quality images attract more serious offers</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">Auto-Expire Offers (Optional)</label>
+                    <select class="form-select" 
+                            [(ngModel)]="offerExpiryDays" 
+                            name="offerExpiryDays">
+                      <option value="">No expiry</option>
+                      <option value="1">1 day</option>
+                      <option value="3">3 days</option>
+                      <option value="7">1 week</option>
+                      <option value="14">2 weeks</option>
+                    </select>
+                    <div class="form-hint">Automatically expire offers after this time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
 
             <!-- Tips Section -->
             <div class="tips-section">

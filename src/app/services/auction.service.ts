@@ -9,16 +9,20 @@ export interface Auction {
   description: string;
   startingPrice: number;
   currentPrice: number;
-  endTime: Date;
+  endTime: Date | null;
   imageUrl: string;
   category: string;
   condition: string;
+  saleType: 'auction' | 'direct';
+  minOffer?: number;
+  offerExpiryDays?: number;
   owner: {
     id: string;
     username: string;
   };
   bids: Bid[];
-  status: 'active' | 'ended' | 'cancelled';
+  offers: Offer[];
+  status: 'active' | 'ended' | 'cancelled' | 'sold';
   createdAt: Date;
 }
 
@@ -33,14 +37,36 @@ export interface Bid {
   auction?: Auction;
 }
 
+export interface Offer {
+  id: string;
+  amount: number;
+  message?: string;
+  buyer: {
+    id: string;
+    username: string;
+  };
+  status: 'pending' | 'accepted' | 'rejected' | 'expired';
+  createdAt: Date;
+  expiresAt?: Date;
+  auction?: Auction;
+}
+
 export interface CreateAuctionRequest {
   title: string;
   description: string;
   startingPrice: number;
-  endTime: Date;
+  endTime: Date | null;
   category: string;
   condition: string;
+  saleType: 'auction' | 'direct';
+  minOffer?: number;
+  offerExpiryDays?: number;
   imageUrl?: string;
+}
+
+export interface CreateOfferRequest {
+  amount: number;
+  message?: string;
 }
 
 @Injectable({
@@ -73,7 +99,9 @@ export class AuctionService {
     const auctionData = {
       ...auction,
       startingPrice: auction.startingPrice.toString(),
-      endTime: auction.endTime.toISOString()
+      endTime: auction.endTime ? auction.endTime.toISOString() : null,
+      minOffer: auction.minOffer?.toString(),
+      offerExpiryDays: auction.offerExpiryDays?.toString()
     };
     
     return this.http.post<Auction>(
@@ -91,6 +119,25 @@ export class AuctionService {
     );
   }
 
+  makeOffer(auctionId: string, offer: CreateOfferRequest): Observable<Offer> {
+    return this.http.post<Offer>(
+      this.configService.offerEndpoints.makeOffer(auctionId), 
+      { 
+        amount: offer.amount.toString(),
+        message: offer.message 
+      },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  respondToOffer(offerId: string, response: 'accept' | 'reject'): Observable<Offer> {
+    return this.http.put<Offer>(
+      this.configService.offerEndpoints.respondToOffer(offerId), 
+      { response },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   getMyBids(): Observable<Bid[]> {
     return this.http.get<Bid[]>(
       this.configService.bidEndpoints.myBids,
@@ -98,9 +145,23 @@ export class AuctionService {
     );
   }
 
+  getMyOffers(): Observable<Offer[]> {
+    return this.http.get<Offer[]>(
+      this.configService.offerEndpoints.myOffers,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   getMyAuctions(): Observable<Auction[]> {
     return this.http.get<Auction[]>(
       this.configService.auctionEndpoints.myAuctions,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getReceivedOffers(auctionId: string): Observable<Offer[]> {
+    return this.http.get<Offer[]>(
+      this.configService.offerEndpoints.receivedOffers(auctionId),
       { headers: this.getAuthHeaders() }
     );
   }

@@ -360,3 +360,57 @@
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
   }
 } 
+
+.sale-type-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sale-type-option {
+  flex: 1;
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #1a1a1a;
+
+  &:hover {
+    border-color: #dc3545;
+    background: #2a2a2a;
+  }
+
+  &.selected {
+    border-color: #dc3545;
+    background: #2a2a2a;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+}
+
+.sale-type-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+  color: #ffffff;
+}
+
+.sale-type-content {
+  margin-left: 0.5rem;
+
+  strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  small {
+    color: #cccccc;
+    font-size: 0.9rem;
+  }
+} 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuctionService, Bid } from '../../services/auction.service';
+import { AuctionService, Bid, Offer } from '../../services/auction.service';
 import { AuthService } from '../../services/auth.service';
 import { CurrencyService } from '../../services/currency.service';
 
@@ -14,6 +14,7 @@ import { CurrencyService } from '../../services/currency.service';
 })
 export class MyBidsComponent implements OnInit {
     bids: Bid[] = [];
+    offers: Offer[] = [];
     loading = true;
 
     constructor(
@@ -28,6 +29,7 @@ export class MyBidsComponent implements OnInit {
             return;
         }
         this.loadBids();
+        this.loadOffers();
     }
 
     loadBids() {
@@ -42,6 +44,19 @@ export class MyBidsComponent implements OnInit {
                 console.error('Error loading bids:', error);
                 this.loading = false;
                 // this.loadMockBids();
+            }
+        });
+    }
+
+    loadOffers() {
+        this.auctionService.getMyOffers().subscribe({
+            next: (offers) => {
+                console.log('Received offers from backend:', offers);
+                this.offers = offers;
+            },
+            error: (error) => {
+                console.error('Error loading offers:', error);
+                // this.loadMockOffers();
             }
         });
     }
@@ -92,6 +107,43 @@ export class MyBidsComponent implements OnInit {
 
         // For other auctions, show winning or outbid
         return isWinning ? 'Winning' : 'Outbid';
+    }
+
+    getOfferStatusClass(offer: Offer): string {
+        switch (offer.status) {
+            case 'pending':
+                return 'badge-warning';
+            case 'accepted':
+                return 'badge-success';
+            case 'rejected':
+                return 'badge-danger';
+            case 'expired':
+                return 'badge-secondary';
+            default:
+                return 'badge-secondary';
+        }
+    }
+
+    getOfferStatusText(offer: Offer): string {
+        switch (offer.status) {
+            case 'pending':
+                return 'Pending';
+            case 'accepted':
+                return 'Accepted';
+            case 'rejected':
+                return 'Rejected';
+            case 'expired':
+                return 'Expired';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    makeNewOffer(offer: Offer) {
+        if (offer.auction) {
+            // Navigate to the auction page to make a new offer
+            window.location.href = `/auctions/${offer.auction.id}`;
+        }
     }
 
     isWinningBid(bid: Bid): boolean {
@@ -156,6 +208,39 @@ export class MyBidsComponent implements OnInit {
                     currentPrice: 200,
                     status: 'active',
                     endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+                } as any
+            }
+        ];
+    }
+
+    loadMockOffers() {
+        this.offers = [
+            {
+                id: '1',
+                amount: 120,
+                message: 'Would you consider 120€?',
+                buyer: { id: '1', username: 'AdeptusFan' },
+                status: 'pending',
+                createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                auction: {
+                    id: '3',
+                    title: 'Rare Space Marine Terminator',
+                    startingPrice: 150,
+                    status: 'active'
+                } as any
+            },
+            {
+                id: '2',
+                amount: 80,
+                message: 'I can offer 80€ for this item',
+                buyer: { id: '1', username: 'AdeptusFan' },
+                status: 'rejected',
+                createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+                auction: {
+                    id: '4',
+                    title: 'Limited Edition Codex',
+                    startingPrice: 100,
+                    status: 'active'
                 } as any
             }
         ];
