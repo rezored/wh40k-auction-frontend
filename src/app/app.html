@@ -46,9 +46,68 @@
                         <a class="nav-link" routerLink="/auctions/create"
                             routerLinkActive="active">Create Auction</a>
                     </li>
+                    <li class="nav-item" *ngIf="authService.loginStatus()">
+                        <a class="nav-link" routerLink="/auctions/my-auctions"
+                            routerLinkActive="active">My Auctions</a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav">
+                    <!-- Notification Bell -->
+                    <li
+                        class="nav-item dropdown notification-dropdown-container"
+                        *ngIf="authService.loginStatus()">
+                        <a class="nav-link position-relative" href="#"
+                            (click)="toggleNotificationDropdown(); $event.preventDefault()"
+                            role="button">
+                            <i class="fas fa-bell"></i>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                *ngIf="unreadCount > 0">
+                                {{ unreadCount > 99 ? '99+' : unreadCount }}
+                            </span>
+                        </a>
+                        <div class="dropdown-menu notification-dropdown"
+                            [class.show]="showNotificationDropdown">
+                            <div
+                                class="dropdown-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Notifications</h6>
+                                <button class="btn btn-sm btn-outline-primary"
+                                    (click)="markAllAsRead()"
+                                    *ngIf="unreadCount > 0">
+                                    Mark all read
+                                </button>
+                            </div>
+                            <div class="notification-list">
+                                <div class="text-center text-muted p-3"
+                                    *ngIf="notifications.length === 0">
+                                    No notifications
+                                </div>
+                                <div class="notification-item"
+                                    *ngFor="let notification of notifications"
+                                    [class.unread]="!notification.isRead"
+                                    (click)="markAsRead(notification.id)">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">{{ notification.title
+                                            }}</h6>
+                                        <small class="text-muted">{{
+                                            notification.createdAt |
+                                            date:'short' }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message
+                                        }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-circle"
+                                            *ngIf="!notification.isRead"></i>
+                                        {{ notification.type.replace('_', ' ') |
+                                        titlecase }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- User Dropdown -->
                     <li class="nav-item dropdown"
                         *ngIf="authService.loginStatus()">
                         <a class="nav-link dropdown-toggle" href="#"

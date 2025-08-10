@@ -241,79 +241,122 @@ export class CreateAuctionComponent implements OnInit {
   }
 
   onSubmit() {
-    this.submitted = true;
+    console.log('=== onSubmit() called ===');
+    console.log('Current auction data:', this.auction);
+    console.log('Images:', this.images);
+    console.log('Loading state:', this.loading);
+    console.log('Submitted state:', this.submitted);
 
+    this.submitted = true;
+    console.log('Set submitted to true');
+
+    console.log('=== Starting form validation ===');
     if (!this.validateForm()) {
+      console.log('Form validation failed - returning early');
       return;
     }
+    console.log('Form validation passed');
 
     this.loading = true;
     this.cdr.detectChanges();
+    console.log('Set loading to true and triggered change detection');
 
     // Set the main image URL if available
     const mainImage = this.images.find(img => img.isMain);
     if (mainImage) {
       this.auction.imageUrl = mainImage.url;
+      console.log('Set main image URL:', this.auction.imageUrl);
+    } else {
+      console.log('No main image found');
     }
+
+    console.log('=== About to call auctionService.createAuction ===');
+    console.log('Final auction data being sent:', this.auction);
 
     // Create auction
     this.auctionService.createAuction(this.auction).subscribe({
       next: (auction) => {
+        console.log('=== Auction created successfully ===');
+        console.log('Created auction:', auction);
         this.toastService.show('Auction created successfully!', 'success');
         this.router.navigate(['/auctions', auction.id]);
       },
       error: (error) => {
-        console.error('Error creating auction:', error);
+        console.log('=== Error creating auction ===');
+        console.error('Error details:', error);
+        console.error('Error status:', error.status);
+        console.error('Error message:', error.message);
+        console.error('Error response:', error.error);
         this.toastService.show('Failed to create auction. Please try again.', 'error');
         this.loading = false;
         this.cdr.detectChanges();
       }
     });
+
+    console.log('=== onSubmit() completed - subscription set up ===');
+  }
+
+  onFormSubmit(event: Event) {
+    console.log('=== Form submit event triggered ===');
+    console.log('Event:', event);
+    event.preventDefault();
+    this.onSubmit();
   }
 
   private validateForm(): boolean {
+    console.log('=== validateForm() called ===');
+    console.log('Validating auction data:', this.auction);
+
     // Title validation
+    console.log('Checking title:', this.auction.title);
     if (!this.auction.title.trim()) {
+      console.log('Title validation failed: empty title');
       this.toastService.show('Please enter a title', 'error');
       return false;
     }
 
     if (this.auction.title.trim().length < 10) {
+      console.log('Title validation failed: too short, length:', this.auction.title.trim().length);
       this.toastService.show('Title must be at least 10 characters long', 'error');
       return false;
     }
+    console.log('Title validation passed');
 
     // Description validation
-    if (!this.auction.description.trim()) {
-      this.toastService.show('Please enter a description', 'error');
-      return false;
-    }
-
-    if (this.auction.description.trim().length < 50) {
-      this.toastService.show('Description must be at least 50 characters long', 'error');
-      return false;
-    }
+    console.log('Checking description:', this.auction.description);
+    // Description is optional - no length requirements
+    console.log('Description validation passed');
 
     // Price validation
+    console.log('Checking starting price:', this.auction.startingPrice);
     if (this.auction.startingPrice <= 0) {
+      console.log('Price validation failed: invalid price');
       this.toastService.show('Please enter a valid starting price', 'error');
       return false;
     }
 
     if (this.auction.startingPrice > 10000) {
+      console.log('Price validation failed: too high');
       this.toastService.show('Starting price cannot exceed €10,000', 'error');
       return false;
     }
+    console.log('Price validation passed');
 
     // Category validation
+    console.log('Checking category:', this.auction.category);
     if (!this.auction.category) {
+      console.log('Category validation failed: no category selected');
       this.toastService.show('Please select a category', 'error');
       return false;
     }
+    console.log('Category validation passed');
 
     // Auction-specific validation
+    console.log('Checking sale type:', this.auction.saleType);
     if (this.auction.saleType === 'auction') {
+      console.log('Validating auction-specific fields');
       if (!this.auction.endTime) {
+        console.log('Auction validation failed: no end time');
         this.toastService.show('Please set an end date for auctions', 'error');
         return false;
       }
@@ -323,6 +366,7 @@ export class CreateAuctionComponent implements OnInit {
       today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
 
       if (endDate < today) {
+        console.log('Auction validation failed: end date in past');
         this.toastService.show('End date cannot be in the past', 'error');
         return false;
       }
@@ -331,41 +375,63 @@ export class CreateAuctionComponent implements OnInit {
       const maxEndDate = new Date();
       maxEndDate.setDate(maxEndDate.getDate() + 90);
       if (endDate > maxEndDate) {
+        console.log('Auction validation failed: end date too far in future');
         this.toastService.show('End date cannot be more than 90 days in the future', 'error');
         return false;
       }
+      console.log('Auction validation passed');
     }
 
     // Direct sale validation
     if (this.auction.saleType === 'direct') {
+      console.log('Validating direct sale fields');
+      console.log('Min offer:', this.auction.minOffer);
+      console.log('Starting price:', this.auction.startingPrice);
+
       if (!this.auction.minOffer || this.auction.minOffer <= 0) {
+        console.log('Direct sale validation failed: no min offer');
         this.toastService.show('Please set a minimum offer amount for direct sales', 'error');
         return false;
       }
 
-      if (this.auction.minOffer < this.auction.startingPrice) {
-        this.toastService.show('Minimum offer cannot be less than starting price', 'error');
+      if (this.auction.minOffer >= this.auction.startingPrice) {
+        console.log('Direct sale validation failed: min offer >= starting price');
+        console.log('Min offer:', this.auction.minOffer, 'Starting price:', this.auction.startingPrice);
+        this.toastService.show('Minimum offer must be less than the starting price', 'error');
         return false;
       }
+      console.log('Direct sale validation passed');
     }
 
     // Image validation
+    console.log('Checking images:', this.images.length, 'Image URL:', this.auction.imageUrl);
     if (this.images.length === 0 && !this.auction.imageUrl) {
+      console.log('Image validation failed: no images or URL');
       this.toastService.show('Please upload at least one image or provide an image URL', 'error');
       return false;
     }
+    console.log('Image validation passed');
 
+    console.log('=== All validations passed ===');
     return true;
   }
 
   onSaleTypeChange() {
+    console.log('=== onSaleTypeChange() called ===');
+    console.log('New sale type:', this.auction.saleType);
+
     if (this.auction.saleType === 'direct') {
+      console.log('Setting direct sale - clearing end time');
       this.auction.endTime = null;
     } else {
+      console.log('Setting auction - clearing min offer and expiry days');
       this.auction.minOffer = undefined;
       this.auction.offerExpiryDays = undefined;
     }
+
+    console.log('Updated auction data:', this.auction);
     this.cdr.detectChanges();
+    console.log('Change detection triggered');
   }
 
   getCategoryDisplayName(categoryId: string): string {

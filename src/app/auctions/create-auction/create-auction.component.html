@@ -19,7 +19,7 @@
 <div class="main-content">
     <div class="container">
         <div class="form-container">
-            <form (ngSubmit)="onSubmit()" #auctionForm="ngForm">
+            <form (ngSubmit)="onFormSubmit($event)" #auctionForm="ngForm">
                 <div class="row g-4">
                     <!-- Left Column - Form Fields -->
                     <div class="col-lg-8">
@@ -58,15 +58,14 @@
                                     <label for="description" class="form-label">
                                         <i
                                             class="fas fa-align-left me-2"></i>Description
-                                        *
+                                        (Optional)
                                     </label>
                                     <textarea class="form-control"
                                         id="description"
                                         name="description"
                                         [(ngModel)]="auction.description"
                                         rows="5"
-                                        required
-                                        placeholder="Describe your miniature in detail - condition, paint job, modifications, etc."
+                                        placeholder="Describe your miniature in detail - condition, paint job, modifications, etc. (optional)"
                                         aria-describedby="descriptionHelp"></textarea>
                                     <div id="descriptionHelp"
                                         class="form-text">Include details about
@@ -699,7 +698,8 @@
                             <div class="form-actions">
                                 <button type="submit"
                                     class="btn btn-primary btn-lg w-100 mb-3"
-                                    [disabled]="loading">
+                                    [disabled]="loading"
+                                    (click)="onSubmit()">
                                     <span *ngIf="!loading">
                                         <i class="fas fa-plus me-2"></i>Create
                                         Auction

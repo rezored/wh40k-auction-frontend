@@ -1,0 +1,274 @@
+<div class="my-auctions-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">My Auctions & Offers</h1>
+                <p class="hero-subtitle">Manage your auctions and review pending
+                    offers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Not Logged In Message -->
+    <div class="container" *ngIf="!authService.loginStatus()">
+        <div class="alert alert-warning text-center">
+            <h4><i class="fas fa-exclamation-triangle me-2"></i>Authentication
+                Required</h4>
+            <p>Please log in to view your auctions and offers.</p>
+            <a routerLink="/auth/login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+        </div>
+    </div>
+
+    <div class="container" *ngIf="authService.loginStatus()">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" id="myAuctionsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active"
+                    id="auctions-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#auctions"
+                    type="button"
+                    role="tab">
+                    <i class="fas fa-gavel me-2"></i>
+                    My Auctions
+                    <span class="badge bg-secondary ms-2">{{ auctions.length
+                        }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                    id="offers-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#offers"
+                    type="button"
+                    role="tab">
+                    <i class="fas fa-handshake me-2"></i>
+                    Pending Offers
+                    <span class="badge bg-warning ms-2">{{ pendingOffers.length
+                        }}</span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="myAuctionsTabsContent">
+            <!-- Auctions Tab -->
+            <div class="tab-pane fade show active" id="auctions"
+                role="tabpanel">
+                <!-- Loading State -->
+                <div class="loading-state" *ngIf="loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Loading your auctions...</p>
+                </div>
+
+                <!-- Error State -->
+                <div class="error-state" *ngIf="error && !loading">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <p class="error-text">{{ errorMessage }}</p>
+                    <button class="btn btn-primary" (click)="loadMyAuctions()">
+                        <i class="fas fa-redo me-2"></i>Try Again
+                    </button>
+                </div>
+
+                <!-- Auctions List -->
+                <div *ngIf="!loading && !error">
+                    <div class="auctions-grid" *ngIf="auctions.length > 0">
+                        @for (auction of auctions; track auction.id) {
+                        <div class="auction-card">
+                            <div class="auction-image">
+                                <img
+                                    [src]="auction.imageUrl || 'https://via.placeholder.com/300x200/1a1a2e/ffffff?text=WH40K+Item'"
+                                    [alt]="auction.title">
+                                <div class="auction-status-badge"
+                                    [class]="getAuctionStatusClass(auction)">
+                                    {{ getAuctionStatusText(auction) }}
+                                </div>
+                                <div class="pending-offers-badge"
+                                    *ngIf="getPendingOffersCount(auction) > 0">
+                                    <i class="fas fa-bell me-1"></i>
+                                    {{ getPendingOffersCount(auction) }} Pending
+                                </div>
+                            </div>
+                            <div class="auction-content">
+                                <h3 class="auction-title">{{ auction.title
+                                    }}</h3>
+                                <p class="auction-category">{{ auction.category
+                                    | titlecase }}</p>
+                                <div class="auction-price">
+                                    <span class="price-label">Starting
+                                        Price:</span>
+                                    <span class="price-value">{{
+                                        formatPrice(auction.startingPrice)
+                                        }}</span>
+                                </div>
+                                <div class="auction-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <span>{{ getSaleTypeDisplay(auction)
+                                            }}</span>
+                                    </div>
+                                    <!-- Debug info - remove after testing -->
+                                    <div class="detail-item"
+                                        style="font-size: 0.8em; color: #666;">
+                                        <small>Debug: saleType={{
+                                            auction.saleType }}, offers={{
+                                            auction.offers.length
+                                            }}</small>
+                                    </div>
+                                    <div class="detail-item"
+                                        *ngIf="auction.bids && auction.bids.length > 0">
+                                        <i class="fas fa-gavel me-1"></i>
+                                        <span>{{ auction.bids.length }}
+                                            bids</span>
+                                    </div>
+                                    <div class="detail-item"
+                                        *ngIf="auction.offers && auction.offers.length > 0">
+                                        <i class="fas fa-handshake me-1"></i>
+                                        <span>{{ auction.offers.length }}
+                                            offers</span>
+                                    </div>
+                                </div>
+                                <div class="auction-actions">
+                                    <a [routerLink]="['/auctions', auction.id]"
+                                        class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                    <a
+                                        [routerLink]="['/auctions', auction.id, 'edit']"
+                                        class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <!-- No Auctions -->
+                    <div class="empty-state" *ngIf="auctions.length === 0">
+                        <div class="empty-icon">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <h3 class="empty-title">No auctions yet</h3>
+                        <p class="empty-text">Create your first auction to start
+                            selling</p>
+                        <a routerLink="/auctions/create"
+                            class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create Auction
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offers Tab -->
+            <div class="tab-pane fade" id="offers" role="tabpanel">
+                <!-- Loading State -->
+                <div class="loading-state" *ngIf="loadingOffers">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Loading pending offers...</p>
+                </div>
+
+                <!-- Error State -->
+                <div class="error-state" *ngIf="errorOffers && !loadingOffers">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <p class="error-text">{{ errorMessageOffers }}</p>
+                    <button class="btn btn-primary"
+                        (click)="loadPendingOffers()">
+                        <i class="fas fa-redo me-2"></i>Try Again
+                    </button>
+                </div>
+
+                <!-- Offers List -->
+                <div *ngIf="!loadingOffers && !errorOffers">
+                    <div class="offers-list" *ngIf="pendingOffers.length > 0">
+                        @for (offer of pendingOffers; track offer.id) {
+                        <div class="offer-card">
+                            <div class="offer-header">
+                                <div class="offer-auction-info">
+                                    <img
+                                        [src]="offer.auctionImage || 'https://via.placeholder.com/60x60/1a1a2e/ffffff?text=Item'"
+                                        [alt]="offer.auctionTitle"
+                                        class="auction-thumbnail">
+                                    <div class="auction-details">
+                                        <h4 class="auction-title">{{
+                                            offer.auctionTitle }}</h4>
+                                        <a
+                                            [routerLink]="['/auctions', offer.auctionId]"
+                                            class="view-auction-link">
+                                            <i
+                                                class="fas fa-external-link-alt me-1"></i>View
+                                            Auction
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="offer-status">
+                                    <span class="badge"
+                                        [class]="getOfferStatusClass(offer)">
+                                        {{ getOfferStatusText(offer) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="offer-content">
+                                <div class="offer-details">
+                                    <div class="offer-amount">
+                                        <span class="amount-label">Offer
+                                            Amount:</span>
+                                        <span class="amount-value">{{
+                                            formatPrice(offer.amount) }}</span>
+                                    </div>
+                                    <div class="offer-buyer">
+                                        <span class="buyer-label">From:</span>
+                                        <span class="buyer-name">{{
+                                            offer.buyer?.username || 'Unknown'
+                                            }}</span>
+                                    </div>
+                                    <div class="offer-message"
+                                        *ngIf="offer.message">
+                                        <span
+                                            class="message-label">Message:</span>
+                                        <span class="message-text">{{
+                                            offer.message }}</span>
+                                    </div>
+                                    <div class="offer-date">
+                                        <span
+                                            class="date-label">Received:</span>
+                                        <span class="date-value">{{
+                                            offer.createdAt | date:'short'
+                                            }}</span>
+                                    </div>
+                                </div>
+                                <div class="offer-actions">
+                                    <button class="btn btn-success btn-sm"
+                                        (click)="acceptOffer(offer)">
+                                        <i class="fas fa-check me-1"></i>Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm"
+                                        (click)="rejectOffer(offer)">
+                                        <i class="fas fa-times me-1"></i>Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- No Offers -->
+                    <div class="empty-state" *ngIf="pendingOffers.length === 0">
+                        <div class="empty-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3 class="empty-title">No pending offers</h3>
+                        <p class="empty-text">You don't have any pending offers
+                            at the moment</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

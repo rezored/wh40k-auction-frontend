@@ -47,7 +47,6 @@ body {
       width: auto;
       max-width: 150px;
       vertical-align: middle;
-
     }
   }
 
@@ -100,6 +99,91 @@ body {
     border-color: #0f3460;
     margin: 0.5rem 0;
   }
+}
+
+// Notification Dropdown Styles
+.notification-dropdown {
+  width: 350px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #1a1a2e;
+  border: 1px solid #e94560;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  margin-top: 0.5rem;
+
+  .dropdown-header {
+    background: #0f3460;
+    color: #ffffff;
+    padding: 1rem;
+    border-bottom: 1px solid #e94560;
+    border-radius: 12px 12px 0 0;
+
+    h6 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .btn {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+
+  .notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid #0f3460;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(233, 69, 96, 0.1);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.unread {
+      border-left: 4px solid #e94560;
+      background: rgba(233, 69, 96, 0.05);
+    }
+
+    h6 {
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #b8b8b8;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    small {
+      color: #6c757d;
+      font-size: 0.8rem;
+
+      .fas.fa-circle {
+        color: #e94560;
+        font-size: 0.6rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+// Notification Bell Badge
+.nav-link .badge {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
 }
 
 // Main Content

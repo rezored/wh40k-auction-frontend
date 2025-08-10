@@ -6,7 +6,6 @@ import { AuctionService, Auction, Bid, Offer, CreateOfferRequest } from '../../s
 import { AuthService, UserAddress } from '../../services/auth.service';
 import { CurrencyService } from '../../services/currency.service';
 import { ToastService } from '../../services/toast.service';
-import { NotificationService } from '../../services/notification.service';
 
 @Component({
     selector: 'app-auction-detail',
@@ -35,7 +34,6 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         public authService: AuthService,
         public currencyService: CurrencyService,
         private toastService: ToastService,
-        private notificationService: NotificationService,
         private cdr: ChangeDetectorRef
     ) { }
 
@@ -156,17 +154,8 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            // Send winner notification with address
-            await this.notificationService.notifyAuctionWinner({
-                auctionId: this.auction.id,
-                winnerId: winningBid.bidder.id,
-                winnerAddress: this.winnerAddress,
-                finalPrice: parseFloat(winningBid.amount as string),
-                auctionTitle: this.auction.title,
-                message: this.notificationMessage
-            }).toPromise();
-
-            this.toastService.success('Winner notified successfully with shipping address!');
+            // Backend will handle winner notification automatically
+            this.toastService.success('Winner notification will be sent automatically by the system!');
             this.hideWinnerNotificationForm();
         } catch (error) {
             console.error('Error notifying winner:', error);
@@ -186,17 +175,8 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            // Accept the offer and send address notification
-            await this.notificationService.notifyOfferAccepted({
-                offerId: offer.id,
-                buyerId: offer.buyer.id,
-                buyerAddress: buyerAddress,
-                offerAmount: offer.amount,
-                auctionTitle: this.auction.title,
-                message: this.notificationMessage
-            }).toPromise();
-
-            this.toastService.success('Offer accepted and buyer notified with your address!');
+            // Backend will handle offer acceptance notification automatically
+            this.toastService.success('Offer accepted! The buyer will be notified automatically.');
             this.loadAuction(this.auction.id);
         } catch (error) {
             console.error('Error accepting offer:', error);
