@@ -34,7 +34,7 @@ export class AuthService {
 
     private getAuthHeaders(): HttpHeaders {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        
+
         if (token && this.isTokenExpired(token)) {
             this.clearToken();
             this.userSignal.set(null);
@@ -42,7 +42,7 @@ export class AuthService {
                 'Content-Type': 'application/json'
             });
         }
-        
+
         return new HttpHeaders({
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
@@ -53,7 +53,7 @@ export class AuthService {
         try {
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
             return JSON.parse(jsonPayload);
@@ -68,17 +68,17 @@ export class AuthService {
         if (!decoded || !decoded.exp) {
             return true; // If we can't decode or no expiration, consider it expired
         }
-        
+
         const currentTime = Math.floor(Date.now() / 1000);
         const isExpired = decoded.exp < currentTime;
-        
+
         return isExpired;
     }
 
     private checkExistingToken() {
         // Always check localStorage first for better persistence
         const token = localStorage.getItem('token');
-        
+
         if (token) {
             // Check if token is expired
             if (this.isTokenExpired(token)) {
@@ -87,11 +87,11 @@ export class AuthService {
                 this.loginStatusSignal.set(false);
                 return;
             }
-            
+
             this.validateTokenLocally(token);
             return;
         }
-        
+
         // No token found, ensure login status is false
         this.loginStatusSignal.set(false);
     }
@@ -104,12 +104,12 @@ export class AuthService {
             this.loginStatusSignal.set(false);
             return;
         }
-        
+
         // Simple local validation - check if token exists and has valid format
         if (token && token.length > 10) {
             // Try to get user data from localStorage if available
             const storedUser = localStorage.getItem('user');
-            
+
             if (storedUser) {
                 try {
                     const user = JSON.parse(storedUser);
@@ -120,12 +120,13 @@ export class AuthService {
                     // Failed to parse stored user data
                 }
             }
-            
-            // If no stored user, create a basic user object
+
+            // If no stored user, try to extract user info from JWT token
+            const decodedToken = this.decodeJwtToken(token);
             const basicUser = {
-                id: 'unknown',
-                username: 'User',
-                email: 'user@example.com',
+                id: decodedToken?.sub || decodedToken?.user_id || decodedToken?.id || 'unknown',
+                username: decodedToken?.username || decodedToken?.name || 'User',
+                email: decodedToken?.email || 'user@example.com',
                 token: 'valid'
             };
             this.userSignal.set(basicUser);
@@ -142,7 +143,7 @@ export class AuthService {
         localStorage.setItem('token', token);
         // Also store in sessionStorage as backup
         sessionStorage.setItem('token', token);
-        
+
         // Store remember me preference
         localStorage.setItem('rememberMe', rememberMe.toString());
     }
@@ -173,12 +174,12 @@ export class AuthService {
 
     setUserData(token: string, user: any, rememberMe: boolean = true) {
         this.storeToken(token, rememberMe);
-        
+
         // Also store user data in localStorage for restoration
         if (user) {
             localStorage.setItem('user', JSON.stringify(user));
         }
-        
+
         this.userSignal.set(user);
         this.loginStatusSignal.set(true);
     }
@@ -191,15 +192,15 @@ export class AuthService {
 
     isLoggedIn() {
         const user = this.userSignal();
-        
+
         // Add comprehensive null/undefined checks
         if (user === null || user === undefined) {
             return false;
         }
-        
+
         // Check if user has a token property and it's not 'validating'
         const loggedIn = user && typeof user === 'object' && user.token !== 'validating';
-        
+
         // Don't check token expiration here to avoid change detection issues
         // Token expiration is handled in isUserLoggedIn() which is called from templates
         return loggedIn;
@@ -210,25 +211,25 @@ export class AuthService {
         try {
             // Get the current token
             const token = this.getToken();
-            
+
             // If no token, definitely not logged in
             if (!token) {
                 return false;
             }
-            
+
             // Check for token expiration
             if (this.isTokenExpired(token)) {
                 this.clearToken();
                 this.userSignal.set(null);
                 return false;
             }
-            
+
             // Ensure user state is restored if we have a valid token but no user
             const currentUser = this.userSignal();
             if (!currentUser) {
                 this.validateTokenLocally(token);
             }
-            
+
             // Final check - return true only if we have both a valid token and user
             return this.isLoggedIn();
         } catch (error) {
@@ -241,7 +242,7 @@ export class AuthService {
     private ensureUserState() {
         const currentUser = this.userSignal();
         const token = this.getToken();
-        
+
         // If we have a token but no user, restore the user state
         if (token && !currentUser) {
             this.validateTokenLocally(token);
@@ -271,7 +272,7 @@ export class AuthService {
         const localStorageToken = localStorage.getItem('token');
         const sessionStorageToken = sessionStorage.getItem('token');
         const user = this.userSignal();
-        
+
         return {
             localStorageToken: !!localStorageToken,
             sessionStorageToken: !!sessionStorageToken,

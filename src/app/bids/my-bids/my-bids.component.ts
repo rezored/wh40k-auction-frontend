@@ -170,14 +170,14 @@ export class MyBidsComponent implements OnInit {
         // Check if this specific bid amount equals the highest bid amount
         const isHighest = bid.amount === highestBid;
         
-        console.log('Bid debug:', {
-            bidAmount: bid.amount,
-            highestBid: highestBid,
-            isHighest: isHighest,
-            isOwnAuction: isOwnAuction,
-            currentPrice: bid.auction.currentPrice,
-            auctionBids: bid.auction.bids.map(b => ({ amount: b.amount, bidder: b.bidder.username }))
-        });
+        // console.log('Bid debug:', {
+        //     bidAmount: bid.amount,
+        //     highestBid: highestBid,
+        //     isHighest: isHighest,
+        //     isOwnAuction: isOwnAuction,
+        //     currentPrice: bid.auction.currentPrice,
+        //     auctionBids: bid.auction.bids.map(b => ({ amount: b.amount, bidder: b.bidder.username }))
+        // });
         
         return isHighest;
     }

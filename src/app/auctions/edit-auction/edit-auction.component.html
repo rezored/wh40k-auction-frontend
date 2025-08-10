@@ -1,0 +1,580 @@
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fas fa-edit"></i>
+            </div>
+            <div class="hero-text">
+                <h1 class="hero-title">Edit Auction</h1>
+                <p class="hero-subtitle">Update your auction details and images.
+                    Make changes to showcase your miniature better.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        <div class="form-container">
+            <form (ngSubmit)="onSubmit()" #auctionForm="ngForm">
+                <div class="row g-4">
+                    <!-- Left Column - Form Fields -->
+                    <div class="col-lg-8">
+                        <!-- Basic Information Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="section-title">
+                                    <h3>Basic Information</h3>
+                                    <p>Essential details about your
+                                        miniature</p>
+                                </div>
+                            </div>
+
+                            <div class="form-fields">
+                                <div class="mb-4">
+                                    <label for="title" class="form-label">
+                                        <i class="fas fa-tag me-2"></i>Title *
+                                    </label>
+                                    <input type="text"
+                                        class="form-control form-control-lg"
+                                        id="title"
+                                        name="title"
+                                        [(ngModel)]="auction.title"
+                                        required
+                                        placeholder="Enter a descriptive title for your miniature"
+                                        aria-describedby="titleHelp">
+                                    <div id="titleHelp" class="form-text">A
+                                        clear, descriptive title helps buyers
+                                        find your miniature</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="description" class="form-label">
+                                        <i
+                                            class="fas fa-align-left me-2"></i>Description
+                                        *
+                                    </label>
+                                    <textarea class="form-control"
+                                        id="description"
+                                        name="description"
+                                        [(ngModel)]="auction.description"
+                                        rows="5"
+                                        required
+                                        placeholder="Describe your miniature in detail - condition, paint job, modifications, etc."
+                                        aria-describedby="descriptionHelp"></textarea>
+                                    <div id="descriptionHelp"
+                                        class="form-text">Include details about
+                                        paint quality, modifications, and any
+                                        imperfections</div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="startingPrice"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-euro-sign me-2"></i>Starting
+                                                Price (€) *
+                                            </label>
+                                            <div class="input-group">
+                                                <span
+                                                    class="input-group-text">€</span>
+                                                <input type="number"
+                                                    class="form-control"
+                                                    id="startingPrice"
+                                                    name="startingPrice"
+                                                    [(ngModel)]="auction.startingPrice"
+                                                    min="0"
+                                                    step="0.01"
+                                                    required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="saleType"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-gavel me-2"></i>Sale
+                                                Type *
+                                            </label>
+                                            <select class="form-select"
+                                                id="saleType"
+                                                name="saleType"
+                                                [(ngModel)]="auction.saleType"
+                                                required>
+                                                <option value>Select sale
+                                                    type</option>
+                                                <option
+                                                    value="auction">Auction</option>
+                                                <option value="direct">Direct
+                                                    Sale</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Auction-specific fields -->
+                                <div class="row g-3"
+                                    *ngIf="auction.saleType === 'auction'">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="endTime"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-calendar-alt me-2"></i>End
+                                                Date *
+                                            </label>
+                                            <input type="date"
+                                                class="form-control"
+                                                id="endTime"
+                                                name="endTime"
+                                                [(ngModel)]="auction.endTime"
+                                                [min]="getMinDate()"
+                                                required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Direct sale-specific fields -->
+                                <div class="row g-3"
+                                    *ngIf="auction.saleType === 'direct'">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="minOffer"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-hand-holding-usd me-2"></i>Minimum
+                                                Offer (€)
+                                            </label>
+                                            <div class="input-group">
+                                                <span
+                                                    class="input-group-text">€</span>
+                                                <input type="number"
+                                                    class="form-control"
+                                                    id="minOffer"
+                                                    name="minOffer"
+                                                    [(ngModel)]="auction.minOffer"
+                                                    min="0"
+                                                    step="0.01">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="offerExpiryDays"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-clock me-2"></i>Offer
+                                                Expiry (Days)
+                                            </label>
+                                            <input type="number"
+                                                class="form-control"
+                                                id="offerExpiryDays"
+                                                name="offerExpiryDays"
+                                                [(ngModel)]="auction.offerExpiryDays"
+                                                min="1"
+                                                max="30"
+                                                placeholder="7">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category & Details Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="section-title">
+                                    <h3>Category & Details</h3>
+                                    <p>Help buyers find your miniature</p>
+                                </div>
+                            </div>
+
+                            <div class="form-fields">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="categoryGroup"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-folder me-2"></i>Category
+                                                Group *
+                                            </label>
+                                            <select class="form-select"
+                                                id="categoryGroup"
+                                                name="categoryGroup"
+                                                [(ngModel)]="auction.categoryGroup"
+                                                (change)="onCategoryGroupChange()"
+                                                required>
+                                                <option value>Select category
+                                                    group</option>
+                                                <option
+                                                    *ngFor="let group of categoryGroups"
+                                                    [value]="group.id">
+                                                    <i [class]="group.icon"></i>
+                                                    {{ group.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="category"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-tag me-2"></i>Category
+                                                *
+                                            </label>
+                                            <select class="form-select"
+                                                id="category"
+                                                name="category"
+                                                [(ngModel)]="auction.category"
+                                                required
+                                                [disabled]="!auction.categoryGroup">
+                                                <option value>Select
+                                                    category</option>
+                                                <option
+                                                    *ngFor="let category of getCategoriesForGroup(auction.categoryGroup ?? '')"
+                                                    [value]="category.id">
+                                                    {{ category.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="scale"
+                                                class="form-label">
+                                                <i
+                                                    class="fas fa-ruler me-2"></i>Scale
+                                            </label>
+                                            <select class="form-select"
+                                                id="scale"
+                                                name="scale"
+                                                [(ngModel)]="auction.scale">
+                                                <option value>Select
+                                                    scale</option>
+                                                <option
+                                                    *ngFor="let scale of scales"
+                                                    [value]="scale.id">
+                                                    {{ scale.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="era" class="form-label">
+                                                <i
+                                                    class="fas fa-clock me-2"></i>Era
+                                            </label>
+                                            <select class="form-select"
+                                                id="era"
+                                                name="era"
+                                                [(ngModel)]="auction.era">
+                                                <option value>Select
+                                                    era</option>
+                                                <option *ngFor="let era of eras"
+                                                    [value]="era">
+                                                    {{ era | titlecase }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="condition" class="form-label">
+                                        <i
+                                            class="fas fa-star me-2"></i>Condition
+                                        *
+                                    </label>
+                                    <select class="form-select"
+                                        id="condition"
+                                        name="condition"
+                                        [(ngModel)]="auction.condition"
+                                        required>
+                                        <option value>Select condition</option>
+                                        <option
+                                            *ngFor="let condition of conditions"
+                                            [value]="condition.id">
+                                            {{ condition.name }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="tags" class="form-label">
+                                        <i class="fas fa-hashtag me-2"></i>Tags
+                                    </label>
+                                    <div class="tag-input-container">
+                                        <div class="input-group">
+                                            <input type="text"
+                                                class="form-control"
+                                                id="tags"
+                                                name="tags"
+                                                [(ngModel)]="newTag"
+                                                placeholder="Add tags (press Enter or click +)"
+                                                (keyup.enter)="addTag()"
+                                                aria-describedby="tagsHelp">
+                                            <button type="button"
+                                                class="btn btn-outline-primary"
+                                                (click)="addTag()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div id="tagsHelp" class="form-text">Add
+                                            relevant tags to help buyers find
+                                            your miniature</div>
+
+                                        <!-- Display existing tags -->
+                                        <div class="tags-display"
+                                            *ngIf="auction.tags && auction.tags.length > 0">
+                                            <div class="tag-item"
+                                                *ngFor="let tag of auction.tags">
+                                                <span class="tag-text">{{ tag
+                                                    }}</span>
+                                                <button type="button"
+                                                    class="tag-remove"
+                                                    (click)="removeTag(tag)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Images Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-images"></i>
+                                </div>
+                                <div class="section-title">
+                                    <h3>Images</h3>
+                                    <p>Upload high-quality images to showcase
+                                        your miniature</p>
+                                </div>
+                            </div>
+
+                            <div class="form-fields">
+                                <div class="image-upload-area"
+                                    [class.drag-over]="dragOver"
+                                    (dragover)="onDragOver($event)"
+                                    (dragleave)="onDragLeave($event)"
+                                    (drop)="onDrop($event)">
+                                    <div class="upload-content">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Drag and drop images here or click to
+                                            browse</p>
+                                        <input type="file"
+                                            #fileInput
+                                            (change)="onFileSelected($event)"
+                                            multiple
+                                            accept="image/*"
+                                            class="file-input">
+                                        <button type="button"
+                                            class="btn btn-primary upload-button"
+                                            (click)="fileInput.click()">
+                                            Choose Images
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="image-gallery"
+                                    *ngIf="images.length > 0">
+                                    <h4 class="gallery-title">Uploaded
+                                        Images</h4>
+                                    <div class="gallery-grid">
+                                        <div class="image-item"
+                                            *ngFor="let image of images">
+                                            <div class="image-container">
+                                                <img [src]="image.url"
+                                                    [alt]="'Auction image'"
+                                                    class="gallery-image">
+                                                <div class="image-overlay">
+                                                    <div class="image-actions">
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-primary"
+                                                            (click)="setMainImage(image.id)"
+                                                            [disabled]="image.isMain">
+                                                            {{ image.isMain ?
+                                                            'Main' : 'Set Main'
+                                                            }}
+                                                        </button>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            (click)="removeImage(image.id)">
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                    <div class="image-badge"
+                                                        *ngIf="image.isMain">
+                                                        Main Image
+                                                    </div>
+                                                </div>
+                                                <div class="loading-overlay"
+                                                    *ngIf="image.isUploading">
+                                                    <div
+                                                        class="spinner-border spinner-border-sm"
+                                                        role="status">
+                                                        <span
+                                                            class="visually-hidden">Uploading...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fallback image URL input -->
+                                <div class="form-group"
+                                    *ngIf="images.length === 0">
+                                    <label for="imageUrl"
+                                        class="form-label">Image URL</label>
+                                    <input type="url"
+                                        id="imageUrl"
+                                        name="imageUrl"
+                                        [(ngModel)]="auction.imageUrl"
+                                        class="form-control"
+                                        placeholder="https://example.com/image.jpg">
+                                    <small class="form-text text-muted">
+                                        Provide a direct URL to an image if you
+                                        don't want to upload files
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="button"
+                                class="btn btn-outline-danger"
+                                (click)="onDelete()"
+                                [disabled]="loading">
+                                Delete Auction
+                            </button>
+                            <div class="action-buttons">
+                                <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    (click)="onCancel()"
+                                    [disabled]="loading">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                    class="btn btn-primary"
+                                    [disabled]="loading || !auctionForm.valid">
+                                    <span
+                                        class="spinner-border spinner-border-sm me-2"
+                                        *ngIf="loading"></span>
+                                    {{ loading ? 'Updating...' :
+                                    'Update Auction' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Preview -->
+                    <div class="col-lg-4">
+                        <div class="preview-sidebar">
+                            <div class="preview-card">
+                                <div class="preview-header">
+                                    <h3>Live Preview</h3>
+                                    <p>See how your auction will look</p>
+                                </div>
+                                <div class="preview-content">
+                                    <div class="preview-image-container">
+                                        <img [src]="getMainImageUrl()"
+                                            [alt]="'Auction preview'"
+                                            class="preview-image"
+                                            *ngIf="getMainImageUrl()">
+                                        <div class="preview-placeholder"
+                                            *ngIf="!getMainImageUrl()">
+                                            <i class="fas fa-image"></i>
+                                            <p>No image selected</p>
+                                        </div>
+                                    </div>
+                                    <div class="preview-details">
+                                        <h4 class="preview-auction-title">
+                                            {{ auction.title || 'Auction Title'
+                                            }}
+                                        </h4>
+                                        <p class="preview-description">
+                                            {{ auction.description ||
+                                            'Auction description will appear here...'
+                                            }}
+                                        </p>
+                                        <div class="preview-meta">
+                                            <div class="meta-item"
+                                                *ngIf="auction.category">
+                                                <span
+                                                    class="meta-label">Category:</span>
+                                                <span class="meta-value">{{
+                                                    getCategoryDisplayName(auction.category)
+                                                    }}</span>
+                                            </div>
+                                            <div class="meta-item"
+                                                *ngIf="auction.condition">
+                                                <span
+                                                    class="meta-label">Condition:</span>
+                                                <span class="meta-value">{{
+                                                    getConditionDisplayName(auction.condition)
+                                                    }}</span>
+                                            </div>
+                                            <div class="meta-item"
+                                                *ngIf="auction.startingPrice">
+                                                <span
+                                                    class="meta-label">Starting
+                                                    Price:</span>
+                                                <span
+                                                    class="meta-value price">€{{
+                                                    auction.startingPrice
+                                                    }}</span>
+                                            </div>
+                                            <div class="meta-item"
+                                                *ngIf="auction.saleType === 'auction' && auction.endTime">
+                                                <span class="meta-label">End
+                                                    Date:</span>
+                                                <span class="meta-value">{{
+                                                    formatEndDate(auction.endTime)
+                                                    }}</span>
+                                            </div>
+                                            <div class="meta-item"
+                                                *ngIf="auction.saleType === 'direct' && auction.minOffer">
+                                                <span class="meta-label">Min
+                                                    Offer:</span>
+                                                <span
+                                                    class="meta-value price">€{{
+                                                    auction.minOffer }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="type-badge"
+                                            [class]="'badge-' + auction.saleType">
+                                            {{ auction.saleType === 'auction' ?
+                                            'Auction' : 'Direct Sale' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
