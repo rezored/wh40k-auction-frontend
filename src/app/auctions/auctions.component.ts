@@ -520,11 +520,11 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
 
 
-    formatPrice(amountEUR: number): string {
-        if (amountEUR === null || amountEUR === undefined || isNaN(amountEUR)) {
+    formatPrice(amountEUR: number | string): string {
+        if (amountEUR === null || amountEUR === undefined || isNaN(parseFloat(amountEUR as string))) {
             return this.currencyService.formatPriceRange(0);
         }
-        return this.currencyService.formatPriceRange(amountEUR);
+        return this.currencyService.formatPriceRange(parseFloat(amountEUR as string));
     }
 
     ngOnDestroy(): void {

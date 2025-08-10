@@ -26,6 +26,7 @@ export interface Auction {
     id: string;
     username: string;
   };
+  bidCount?: number | string;
   bids: Bid[];
   offers: Offer[];
   status: 'active' | 'ended' | 'cancelled' | 'sold';
@@ -34,13 +35,14 @@ export interface Auction {
 
 export interface Bid {
   id: string;
-  amount: number;
+  amount: number | string; // Allow both number and string since backend might send string
   bidder?: {
     id: string;
     username: string;
   };
   createdAt: string | Date; // Allow both string and Date for flexibility
   auction?: Auction;
+  isWinningBid?: boolean; // Add this property that the backend provides
 }
 
 export interface Offer {
@@ -272,6 +274,7 @@ export class AuctionService {
       ...auction,
       endTime: auction.endTime ? new Date(auction.endTime) : null,
       createdAt: new Date(auction.createdAt),
+      bidCount: auction.bidCount ? parseInt(auction.bidCount as string) : 0,
       bids: auction.bids?.map((bid: any) => ({
         ...bid,
         createdAt: new Date(bid.createdAt)

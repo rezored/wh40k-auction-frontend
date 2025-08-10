@@ -13,14 +13,15 @@
         User: {{ authService.user()?.username || 'None' }} |
         Token: {{ getTokenStatus() }}
         <button class="btn btn-sm btn-outline-dark ms-2"
-            (click)="checkAuthState()">Check Auth</button>
+            (click)="checkAuthState()">Check Auth</button>a-vector-illustration-of-a-stylized-logo_LhMMWwmVTSqVSlQWt3VBhQ_92__mLBFT5e515-4LyUQDw-removebg-preview.png
     </div> -->
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" routerLink="/auctions">
-                <i class="fas fa-brain me-2"></i>
+                <img src="assets/images/logo.png" alt="BrainFryer Logo"
+                    class="navbar-logo me-2">
                 BrainFryer
             </a>
 

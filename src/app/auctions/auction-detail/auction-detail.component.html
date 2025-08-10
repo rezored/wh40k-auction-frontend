@@ -234,7 +234,7 @@
                                             date:'MMM dd, HH:mm' }}</div>
                                     </div>
                                     <div class="bid-amount">{{
-                                        formatPrice(bid.amount) }}</div>
+                                        formatPrice(bid.amount || 0) }}</div>
                                     <div class="bid-status">
                                         @if (isWinningBid(bid)) {
                                         <span class="winning-badge">
@@ -292,7 +292,7 @@
                                             date:'MMM dd, HH:mm' }}</div>
                                     </div>
                                     <div class="offer-amount">{{
-                                        formatPrice(offer.amount) }}</div>
+                                        formatPrice(offer.amount || 0) }}</div>
                                     <div class="offer-status">
                                         <span class="status-badge"
                                             [class]="getOfferStatusClass(offer)">

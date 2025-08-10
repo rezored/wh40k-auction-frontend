@@ -161,7 +161,7 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
                 auctionId: this.auction.id,
                 winnerId: winningBid.bidder.id,
                 winnerAddress: this.winnerAddress,
-                finalPrice: winningBid.amount,
+                finalPrice: parseFloat(winningBid.amount as string),
                 auctionTitle: this.auction.title,
                 message: this.notificationMessage
             }).toPromise();
@@ -323,7 +323,7 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
             const validBids = this.auction.bids.filter(b => b && typeof b.amount === 'number' && !isNaN(b.amount));
             if (validBids.length === 0) return false;
 
-            const highestBid = Math.max(...validBids.map(b => b.amount));
+            const highestBid = Math.max(...validBids.map(b => parseFloat(b.amount as string)));
             return bid.amount === highestBid;
         } catch (error) {
             console.warn('Error calculating winning bid:', error);
@@ -369,10 +369,10 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         }
     }
 
-    formatPrice(amountEUR: number): string {
-        if (amountEUR === null || amountEUR === undefined || isNaN(amountEUR)) {
+    formatPrice(amountEUR: number | string): string {
+        if (amountEUR === null || amountEUR === undefined || isNaN(parseFloat(amountEUR as string))) {
             return this.currencyService.formatPriceRange(0);
         }
-        return this.currencyService.formatPriceRange(amountEUR);
+        return this.currencyService.formatPriceRange(parseFloat(amountEUR as string));
     }
 } 

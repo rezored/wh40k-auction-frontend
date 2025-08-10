@@ -42,15 +42,12 @@ body {
     font-weight: 700;
     font-size: 1.5rem;
 
-    i {
-      color: #e94560;
-      font-size: 1.8rem;
-    }
+    .navbar-logo {
+      height: 40px;
+      width: auto;
+      max-width: 150px;
+      vertical-align: middle;
 
-    &:hover {
-      color: #e94560 !important;
-      transform: scale(1.05);
-      transition: all 0.3s ease;
     }
   }
 
