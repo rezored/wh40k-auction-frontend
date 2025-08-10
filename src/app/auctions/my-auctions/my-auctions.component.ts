@@ -206,7 +206,7 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
     }
 
     getAuctionStatusClass(auction: Auction): string {
-        if (!auction || !auction.status) return 'badge-secondary';
+        if (!auction || !auction.status) return 'badge-info'; // Default to 'badge-info' for sold auctions
 
         switch (auction.status) {
             case 'active':
@@ -215,13 +215,15 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
                 return 'badge-danger';
             case 'cancelled':
                 return 'badge-secondary';
+            case 'sold':
+                return 'badge-info';
             default:
-                return 'badge-secondary';
+                return 'badge-info'; // Default to 'badge-info' for sold auctions
         }
     }
 
     getAuctionStatusText(auction: Auction): string {
-        if (!auction || !auction.status) return 'Unknown';
+        if (!auction || !auction.status) return 'Sold'; // Default to 'Sold' instead of 'Unknown'
 
         switch (auction.status) {
             case 'active':
@@ -230,8 +232,10 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
                 return 'Ended';
             case 'cancelled':
                 return 'Cancelled';
+            case 'sold':
+                return 'Sold';
             default:
-                return 'Unknown';
+                return 'Sold'; // Default to 'Sold' instead of 'Unknown'
         }
     }
 
@@ -255,19 +259,13 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
         return offer.id || 'unknown';
     }
 
-    // Debug method to get sale type display
     getSaleTypeDisplay(auction: Auction): string {
-        console.log(`Getting sale type display for auction "${auction.title}":`, {
-            saleType: auction.saleType,
-            endTime: auction.endTime
-        });
-
         if (auction.saleType === 'auction') {
             return auction.endTime ? `Ends: ${new Date(auction.endTime).toLocaleString()}` : 'Auction (No end time)';
         } else if (auction.saleType === 'direct') {
             return 'Direct Sale';
         } else {
-            return `Unknown (${auction.saleType})`;
+            return 'Direct Sale'; // Default to Direct Sale instead of Unknown
         }
     }
 }

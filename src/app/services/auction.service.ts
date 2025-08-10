@@ -113,6 +113,7 @@ export interface AuctionFilters {
   sortBy?: string;
   page?: number;
   limit?: number;
+  excludeSold?: boolean; // Exclude sold auctions from main listings
 }
 
 export interface PaginatedAuctionsResponse {

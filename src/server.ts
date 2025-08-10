@@ -12,6 +12,15 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+// Set proper headers for all responses
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 /**
  * Example Express Rest API endpoints can be defined here.
  * Uncomment and define endpoints as necessary.
@@ -25,13 +34,25 @@ const angularApp = new AngularNodeAppEngine();
  */
 
 /**
- * Serve static files from /browser
+ * Serve static files from /browser with proper caching and headers
  */
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',
     index: false,
     redirect: false,
+    setHeaders: (res, path) => {
+      // Set proper content-type for different file types
+      if (path.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      } else if (path.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      } else if (path.endsWith('.html')) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      } else if (path.endsWith('.json')) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      }
+    }
   }),
 );
 
@@ -41,10 +62,37 @@ app.use(
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => {
+      if (response) {
+        // Ensure proper content-type for SSR responses
+        if (!res.getHeader('Content-Type')) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        }
+        writeResponseToNodeResponse(response, res);
+      } else {
+        next();
+      }
+    })
     .catch(next);
+});
+
+/**
+ * Fallback route handler for client-side routing
+ * This ensures that all routes that don't match static files or SSR
+ * will serve the index.html file, allowing Angular's client-side router to handle them
+ */
+app.get('*', (req, res): void => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    res.status(404).send('API endpoint not found');
+    return;
+  }
+
+  // Set proper content-type for the fallback response
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
+  // Serve index.html for all other routes
+  res.sendFile(join(browserDistFolder, 'index.html'));
 });
 
 /**

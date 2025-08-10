@@ -84,7 +84,7 @@
                                 <img
                                     [src]="auction.imageUrl || 'https://via.placeholder.com/300x200/1a1a2e/ffffff?text=WH40K+Item'"
                                     [alt]="auction.title">
-                                <div class="auction-status-badge"
+                                <div class="status-badge"
                                     [class]="getAuctionStatusClass(auction)">
                                     {{ getAuctionStatusText(auction) }}
                                 </div>
@@ -112,14 +112,7 @@
                                         <span>{{ getSaleTypeDisplay(auction)
                                             }}</span>
                                     </div>
-                                    <!-- Debug info - remove after testing -->
-                                    <div class="detail-item"
-                                        style="font-size: 0.8em; color: #666;">
-                                        <small>Debug: saleType={{
-                                            auction.saleType }}, offers={{
-                                            auction.offers.length
-                                            }}</small>
-                                    </div>
+
                                     <div class="detail-item"
                                         *ngIf="auction.bids && auction.bids.length > 0">
                                         <i class="fas fa-gavel me-1"></i>

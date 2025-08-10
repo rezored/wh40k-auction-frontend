@@ -124,7 +124,9 @@ export class AuctionsComponent implements OnInit, OnDestroy {
             showOwn: this.showOwn,
             sortBy: this.sortBy,
             page: this.currentPage,
-            limit: this.itemsPerPage
+            limit: this.itemsPerPage,
+            // Exclude sold auctions from main auctions tab unless viewing own auctions
+            excludeSold: !this.showOwn
         };
     }
 
