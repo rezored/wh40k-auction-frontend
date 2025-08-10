@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, catchError, throwError } from 'rxjs';
 import { ConfigService } from './config.service';
+import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 export interface Auction {
   id: string;
@@ -122,14 +124,28 @@ export interface PaginatedAuctionsResponse {
 export class AuctionService {
   constructor(
     private http: HttpClient,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private router: Router,
+    private authService: AuthService
   ) { }
 
+
+
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token = this.authService.getToken();
+
+    // For debugging - check if token exists and user is logged in
+    const isLoggedIn = this.authService.isUserLoggedIn();
+
+    if (!token || !isLoggedIn) {
+      return new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+    }
+
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
+      'Authorization': `Bearer ${token}`
     });
   }
 
@@ -151,8 +167,38 @@ export class AuctionService {
     }
 
     const url = `${this.configService.auctionEndpoints.list}${params.toString() ? '?' + params.toString() : ''}`;
-    return this.http.get<any>(url).pipe(
-      map(response => this.convertPaginatedResponse(response))
+
+    // Use auth headers for all requests
+    const headers = this.getAuthHeaders();
+
+    // Debug: Check if we have authentication for showOwn requests
+    if (filters?.showOwn) {
+      const token = this.authService.getToken();
+      const isLoggedIn = this.authService.isUserLoggedIn();
+      console.log('ShowOwn request - Token exists:', !!token, 'User logged in:', isLoggedIn);
+    }
+
+    return this.http.get<any>(url, { headers }).pipe(
+      map(response => {
+        return this.convertPaginatedResponse(response);
+      }),
+      catchError((error: any) => {
+        if (error.status === 401) {
+          // For showOwn requests, don't automatically logout and redirect
+          // Let the component handle the error gracefully
+          if (filters?.showOwn) {
+            // Just return the error without clearing tokens or redirecting
+            return throwError(() => error);
+          } else {
+            // For other requests, clear invalid tokens and redirect
+            this.authService.logout();
+            this.router.navigate(['/auth/login'], {
+              queryParams: { returnUrl: this.router.url }
+            });
+          }
+        }
+        return throwError(() => error);
+      })
     );
   }
 

@@ -54,7 +54,7 @@ export class AuctionsComponent implements OnInit, OnDestroy {
     constructor(
         private auctionService: AuctionService,
         private categoryService: CategoryService,
-        private authService: AuthService,
+        public authService: AuthService,
         public currencyService: CurrencyService,
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -62,7 +62,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit() {
-        console.log('AuctionsComponent initialized');
         this.loadCategoryData();
         this.setupQueryParams();
         this.loadAuctions();
@@ -71,35 +70,49 @@ export class AuctionsComponent implements OnInit, OnDestroy {
         // Set a timeout to prevent infinite loading
         this.loadingTimeout = setTimeout(() => {
             if (this.loading) {
-                console.warn('Loading timeout reached, forcing loading to false');
                 this.loading = false;
                 this.error = true;
                 this.errorMessage = 'Loading timeout. Please refresh the page.';
                 this.cdr.detectChanges();
             }
         }, 30000); // 30 seconds timeout
-
-        // Add periodic debug logging
-        setInterval(() => {
-            console.log('Debug - Current state:', {
-                loading: this.loading,
-                error: this.error,
-                auctionsLength: this.auctions.length,
-                filteredAuctionsLength: this.filteredAuctions.length,
-                hasFilters: !!(this.selectedCategoryGroup || this.selectedCategory || this.selectedScale || this.selectedEra || this.selectedCondition || this.selectedStatus || this.selectedPriceRange)
-            });
-        }, 5000); // Log every 5 seconds
     }
 
     setupQueryParams() {
         this.route.queryParams.subscribe(params => {
-            this.showOwn = params['show_own'] === 'true';
-            this.currentPage = parseInt(params['page']) || 1;
+            const newPage = parseInt(params['page']) || 1;
+
+            // Check if page parameter changed
+            const pageChanged = this.currentPage !== newPage;
+
+            this.currentPage = newPage;
             this.updateFilters();
+
+            // If page changed, reload auctions
+            if (pageChanged) {
+                this.loadAuctions();
+            }
         });
     }
 
+    onShowOwnChange() {
+        // Check if user is logged in when trying to view "My Auctions"
+        if (this.showOwn && !this.authService.isUserLoggedIn()) {
+            this.error = true;
+            this.errorMessage = 'Please log in to view your own auctions.';
+            this.loading = false;
+            this.cdr.detectChanges();
+            return;
+        }
+
+        // Reset to first page when toggling showOwn
+        this.currentPage = 1;
+        this.updateFilters();
+        this.loadAuctions();
+    }
+
     updateFilters() {
+        // Always include showOwn if requested - let the backend handle authentication
         this.currentFilters = {
             categoryGroup: this.selectedCategoryGroup || undefined,
             category: this.selectedCategory || undefined,
@@ -120,13 +133,7 @@ export class AuctionsComponent implements OnInit, OnDestroy {
             this.categoryGroups = this.categoryService.getCategoryGroups();
             this.categories = this.categoryService.getCategories();
             this.filterOptions = this.categoryService.getFilterOptions();
-            console.log('Category data loaded:', {
-                groups: this.categoryGroups.length,
-                categories: this.categories.length,
-                filterOptions: this.filterOptions
-            });
         } catch (error) {
-            console.error('Error loading category data:', error);
             this.error = true;
             this.errorMessage = 'Failed to load category data';
             // Set default empty values to prevent crashes
@@ -145,7 +152,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
     }
 
     loadAuctions() {
-        console.log('Loading auctions...');
         this.loading = true;
         this.error = false;
         this.errorMessage = '';
@@ -159,7 +165,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
         this.auctionService.getAuctions(this.currentFilters).subscribe({
             next: (response: PaginatedAuctionsResponse) => {
-                console.log('Auctions loaded successfully:', response);
                 this.auctions = response.auctions;
                 this.totalAuctions = response.total;
                 this.totalPages = response.totalPages;
@@ -168,7 +173,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
                 // Handle case where no auctions are returned from API
                 if (!this.auctions || this.auctions.length === 0) {
-                    console.log('No auctions returned from API');
                     this.filteredAuctions = [];
                     this.cdr.detectChanges();
                     return;
@@ -176,29 +180,38 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
                 // Initially show all auctions without filtering
                 this.filteredAuctions = [...this.auctions];
-                console.log('Initial display complete. Showing all auctions:', this.filteredAuctions.length);
                 this.cdr.detectChanges();
             },
             error: (error) => {
-                console.error('Error loading auctions:', error);
                 this.loading = false;
                 this.error = true;
 
-                // Provide more specific error messages
-                if (error.status === 0) {
+                // Handle specific error for "My Auctions" when not authenticated
+                if (error.status === 401 && this.showOwn) {
+                    this.errorMessage = 'Please log in to view your own auctions.';
+                    // Don't clear auctions array, just show the error message
+                } else if (error.status === 0) {
                     this.errorMessage = 'Unable to connect to the server. Please check your internet connection.';
+                    this.auctions = [];
+                    this.filteredAuctions = [];
                 } else if (error.status === 404) {
                     this.errorMessage = 'Auction service not found. Please contact support.';
+                    this.auctions = [];
+                    this.filteredAuctions = [];
                 } else if (error.status === 500) {
                     this.errorMessage = 'Server error. Please try again later.';
+                    this.auctions = [];
+                    this.filteredAuctions = [];
                 } else if (error.status >= 400) {
                     this.errorMessage = 'Request failed. Please try again.';
+                    this.auctions = [];
+                    this.filteredAuctions = [];
                 } else {
                     this.errorMessage = 'Failed to load auctions. Please try again.';
+                    this.auctions = [];
+                    this.filteredAuctions = [];
                 }
 
-                this.auctions = [];
-                this.filteredAuctions = [];
                 this.cdr.detectChanges();
             }
         });
@@ -225,7 +238,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
     updateQueryParams() {
         const queryParams: any = {};
-        if (this.showOwn) queryParams.show_own = 'true';
         if (this.currentPage > 1) queryParams.page = this.currentPage.toString();
 
         this.router.navigate([], {
@@ -266,72 +278,44 @@ export class AuctionsComponent implements OnInit, OnDestroy {
     Math = Math;
 
     filterAuctions() {
-        console.log('Filtering auctions...', {
-            totalAuctions: this.auctions.length,
-            selectedCategoryGroup: this.selectedCategoryGroup,
-            selectedCategory: this.selectedCategory,
-            selectedScale: this.selectedScale,
-            selectedEra: this.selectedEra,
-            selectedCondition: this.selectedCondition,
-            selectedStatus: this.selectedStatus,
-            selectedPriceRange: this.selectedPriceRange,
-            sortBy: this.sortBy
-        });
-
         // Prevent filtering if auctions array is not loaded yet
         if (!this.auctions || this.auctions.length === 0) {
-            console.log('No auctions to filter');
             this.filteredAuctions = [];
             return;
-        }
-
-        // Log sample auction data to understand structure
-        if (this.auctions.length > 0) {
-            console.log('Sample auction data:', {
-                first: this.auctions[0],
-                total: this.auctions.length
-            });
         }
 
         // Start with all auctions
         let filtered = [...this.auctions];
         let filterCount = 0;
 
-        console.log('Starting with all auctions:', filtered.length);
-
         // Category Group filter
         if (this.selectedCategoryGroup && this.selectedCategoryGroup.trim() !== '') {
             filtered = filtered.filter(auction => auction.categoryGroup === this.selectedCategoryGroup);
             filterCount++;
-            console.log(`After category group filter: ${filtered.length} auctions`);
         }
 
         // Category filter
         if (this.selectedCategory && this.selectedCategory.trim() !== '') {
             filtered = filtered.filter(auction => auction.category === this.selectedCategory);
             filterCount++;
-            console.log(`After category filter: ${filtered.length} auctions`);
         }
 
         // Scale filter
         if (this.selectedScale && this.selectedScale.trim() !== '') {
             filtered = filtered.filter(auction => auction.scale === this.selectedScale);
             filterCount++;
-            console.log(`After scale filter: ${filtered.length} auctions`);
         }
 
         // Era filter
         if (this.selectedEra && this.selectedEra.trim() !== '') {
             filtered = filtered.filter(auction => auction.era === this.selectedEra);
             filterCount++;
-            console.log(`After era filter: ${filtered.length} auctions`);
         }
 
         // Condition filter
         if (this.selectedCondition && this.selectedCondition.trim() !== '') {
             filtered = filtered.filter(auction => auction.condition === this.selectedCondition);
             filterCount++;
-            console.log(`After condition filter: ${filtered.length} auctions`);
         }
 
         // Status filter
@@ -350,7 +334,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
                         return endTime.getTime() - now.getTime() <= oneDay && auction.status === 'active';
                     } catch (error) {
-                        console.warn('Invalid endTime for auction:', auction.id, auction.endTime);
                         return false;
                     }
                 });
@@ -358,7 +341,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
                 filtered = filtered.filter(auction => auction.status === this.selectedStatus);
             }
             filterCount++;
-            console.log(`After status filter: ${filtered.length} auctions`);
         }
 
         // Price range filter
@@ -372,23 +354,18 @@ export class AuctionsComponent implements OnInit, OnDestroy {
                     return auction.currentPrice >= priceRange.min && auction.currentPrice <= priceRange.max;
                 });
                 filterCount++;
-                console.log(`After price range filter: ${filtered.length} auctions`);
             }
         }
-
-        console.log(`Applied ${filterCount} filters. Results: ${filtered.length} auctions`);
 
         // If no filters were applied and we have auctions, show all auctions
         if (filterCount === 0 && this.auctions.length > 0) {
             filtered = [...this.auctions];
-            console.log('No filters applied, showing all auctions:', filtered.length);
         }
 
         // Sort filtered results
         this.sortAuctions(filtered);
 
         this.filteredAuctions = filtered;
-        console.log('Filtering complete. Final filtered auctions:', this.filteredAuctions.length);
         this.cdr.detectChanges();
     }
 
@@ -425,7 +402,7 @@ export class AuctionsComponent implements OnInit, OnDestroy {
                     break;
             }
         } catch (error) {
-            console.warn('Error sorting auctions:', error);
+            // Silently handle sorting errors
         }
     }
 
@@ -480,7 +457,6 @@ export class AuctionsComponent implements OnInit, OnDestroy {
                     return 'badge-secondary';
             }
         } catch (error) {
-            console.warn('Error getting status class:', error);
             return 'badge-secondary';
         }
     }
@@ -512,13 +488,11 @@ export class AuctionsComponent implements OnInit, OnDestroy {
                     return 'Unknown';
             }
         } catch (error) {
-            console.warn('Error getting status text:', error);
             return 'Unknown';
         }
     }
 
     clearFilters() {
-        console.log('Clearing all filters...');
         this.selectedCategoryGroup = '';
         this.selectedCategory = '';
         this.selectedScale = '';
@@ -527,17 +501,16 @@ export class AuctionsComponent implements OnInit, OnDestroy {
         this.selectedStatus = '';
         this.selectedPriceRange = '';
         this.sortBy = 'newest';
+        this.showOwn = false;
         this.currentPage = 1;
 
-        // Show all auctions when filters are cleared
-        this.filteredAuctions = [...this.auctions];
+        // Reload auctions with cleared filters
+        this.updateFilters();
+        this.loadAuctions();
         this.updateQueryParams();
-        console.log('Filters cleared. Showing all auctions:', this.filteredAuctions.length);
-        this.cdr.detectChanges();
     }
 
     refreshData() {
-        console.log('Refreshing auction data...');
         this.loading = true;
         this.error = false;
         this.errorMessage = '';
@@ -545,34 +518,7 @@ export class AuctionsComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
-    forceShowAllAuctions() {
-        console.log('Forcing display of all auctions...');
-        console.log('Current auctions array:', this.auctions);
-        console.log('Current filtered auctions array:', this.filteredAuctions);
 
-        // Clear all filters
-        this.selectedCategoryGroup = '';
-        this.selectedCategory = '';
-        this.selectedScale = '';
-        this.selectedEra = '';
-        this.selectedCondition = '';
-        this.selectedStatus = '';
-        this.selectedPriceRange = '';
-        this.sortBy = 'newest';
-
-        // Force show all auctions
-        this.filteredAuctions = [...this.auctions];
-
-        console.log('Forced display complete. Showing all auctions:', this.filteredAuctions.length);
-        console.log('Filtered auctions after force show:', this.filteredAuctions);
-        this.cdr.detectChanges();
-    }
-
-    checkAPIStatus() {
-        console.log('Checking API status...');
-        // This could be expanded to actually ping the API endpoint
-        return this.auctions.length > 0;
-    }
 
     formatPrice(amountEUR: number): string {
         if (amountEUR === null || amountEUR === undefined || isNaN(amountEUR)) {
