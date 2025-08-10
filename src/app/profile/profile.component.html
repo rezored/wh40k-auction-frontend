@@ -1,28 +1,465 @@
-<div class="container">
+<div class="container mt-4">
   <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card">
-        <div class="card-header">
+    <div class="col-lg-10">
+      <!-- Profile Header -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
           <h3 class="mb-0">
             <i class="fas fa-user me-2"></i>
-            Profile
+            User Profile
           </h3>
         </div>
         <div class="card-body">
-          <div class="text-center mb-4">
-            <div class="profile-avatar">
-              <i class="fas fa-user-circle fa-4x text-primary"></i>
+          <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+              <div class="profile-avatar mb-3">
+                <i class="fas fa-user-circle fa-5x text-primary"></i>
+              </div>
             </div>
-            <h4 class="mt-3">{{ authService.user()?.username || 'User' }}</h4>
-            <p class="text-muted">{{ authService.user()?.email || 'user@example.com' }}</p>
+            <div class="col-md-9">
+              <h4>{{ userProfile?.username || authService.user()?.username ||
+                'User' }}</h4>
+              <p class="text-muted mb-2">{{ userProfile?.email ||
+                authService.user()?.email || 'user@example.com' }}</p>
+              <p class="text-muted mb-0">
+                <i class="fas fa-calendar me-1"></i>
+                Member since {{ userProfile?.createdAt ? (userProfile!.createdAt
+                | date:'MMM yyyy') : 'Recently' }}
+              </p>
+            </div>
           </div>
-          
-          <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>
-            Profile management features coming soon!
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="card">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link"
+                [class.active]="activeTab === 'profile'"
+                (click)="setActiveTab('profile')"
+                type="button">
+                <i class="fas fa-user-edit me-2"></i>Profile Information
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link"
+                [class.active]="activeTab === 'password'"
+                (click)="setActiveTab('password')"
+                type="button">
+                <i class="fas fa-lock me-2"></i>Change Password
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link"
+                [class.active]="activeTab === 'addresses'"
+                (click)="setActiveTab('addresses')"
+                type="button">
+                <i class="fas fa-map-marker-alt me-2"></i>Addresses
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          @if (loading) {
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading...</p>
           </div>
+          }
+
+          <!-- Error State -->
+          @if (error && !loading) {
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ error }}
+          </div>
+          }
+
+          <!-- Profile Information Tab -->
+          @if (activeTab === 'profile' && !loading) {
+          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Username *</label>
+                  <input type="text"
+                    class="form-control"
+                    id="username"
+                    formControlName="username"
+                    [class.is-invalid]="profileForm.get('username')?.invalid && profileForm.get('username')?.touched">
+                  @if (profileForm.get('username')?.invalid &&
+                  profileForm.get('username')?.touched) {
+                  <div class="invalid-feedback">
+                    Username is required and must be at least 3 characters.
+                  </div>
+                  }
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="phone" class="form-label">Phone Number</label>
+                  <input type="tel"
+                    class="form-control"
+                    id="phone"
+                    formControlName="phone">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input type="text"
+                    class="form-control"
+                    id="firstName"
+                    formControlName="firstName">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input type="text"
+                    class="form-control"
+                    id="lastName"
+                    formControlName="lastName">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="currency" class="form-label">Preferred
+                    Currency</label>
+                  <select class="form-select" id="currency"
+                    formControlName="currency">
+                    <option value="EUR">EUR (€)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="GBP">GBP (£)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input"
+                      type="checkbox"
+                      id="emailNotifications"
+                      formControlName="emailNotifications">
+                    <label class="form-check-label" for="emailNotifications">
+                      Email Notifications
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input"
+                      type="checkbox"
+                      id="smsNotifications"
+                      formControlName="smsNotifications">
+                    <label class="form-check-label" for="smsNotifications">
+                      SMS Notifications
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button type="submit"
+                class="btn btn-primary"
+                [disabled]="profileForm.invalid || loading">
+                <i class="fas fa-save me-2"></i>
+                {{ loading ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+          </form>
+          }
+
+          <!-- Change Password Tab -->
+          @if (activeTab === 'password' && !loading) {
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="currentPassword" class="form-label">Current
+                    Password *</label>
+                  <input type="password"
+                    class="form-control"
+                    id="currentPassword"
+                    formControlName="currentPassword"
+                    [class.is-invalid]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
+                  @if (passwordForm.get('currentPassword')?.invalid &&
+                  passwordForm.get('currentPassword')?.touched) {
+                  <div class="invalid-feedback">
+                    Current password is required.
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="newPassword" class="form-label">New Password
+                    *</label>
+                  <input type="password"
+                    class="form-control"
+                    id="newPassword"
+                    formControlName="newPassword"
+                    [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+                  @if (passwordForm.get('newPassword')?.invalid &&
+                  passwordForm.get('newPassword')?.touched) {
+                  <div class="invalid-feedback">
+                    New password must be at least 8 characters.
+                  </div>
+                  }
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="confirmPassword" class="form-label">Confirm New
+                    Password *</label>
+                  <input type="password"
+                    class="form-control"
+                    id="confirmPassword"
+                    formControlName="confirmPassword"
+                    [class.is-invalid]="passwordForm.errors?.['passwordMismatch']">
+                  @if (passwordForm.errors?.['passwordMismatch']) {
+                  <div class="invalid-feedback">
+                    Passwords do not match.
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button type="submit"
+                class="btn btn-warning"
+                [disabled]="passwordForm.invalid || loading">
+                <i class="fas fa-key me-2"></i>
+                {{ loading ? 'Changing...' : 'Change Password' }}
+              </button>
+            </div>
+          </form>
+          }
+
+          <!-- Addresses Tab -->
+          @if (activeTab === 'addresses' && !loading) {
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0">
+              <i class="fas fa-map-marker-alt me-2"></i>
+              Shipping Addresses
+            </h5>
+            @if (!showAddressForm) {
+            <button class="btn btn-success" (click)="showAddressForm = true">
+              <i class="fas fa-plus me-2"></i>Add New Address
+            </button>
+            }
+          </div>
+
+          <!-- Address Form -->
+          @if (showAddressForm) {
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                {{ editingAddress ? 'Edit Address' : 'Add New Address' }}
+              </h6>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="addressForm"
+                (ngSubmit)="editingAddress ? updateAddress() : addAddress()">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label for="street" class="form-label">Street Address
+                        *</label>
+                      <input type="text"
+                        class="form-control"
+                        id="street"
+                        formControlName="street"
+                        [class.is-invalid]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched">
+                      @if (addressForm.get('street')?.invalid &&
+                      addressForm.get('street')?.touched) {
+                      <div class="invalid-feedback">
+                        Street address is required.
+                      </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="city" class="form-label">City *</label>
+                      <input type="text"
+                        class="form-control"
+                        id="city"
+                        formControlName="city"
+                        [class.is-invalid]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
+                      @if (addressForm.get('city')?.invalid &&
+                      addressForm.get('city')?.touched) {
+                      <div class="invalid-feedback">
+                        City is required.
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="state" class="form-label">State/Province
+                        *</label>
+                      <input type="text"
+                        class="form-control"
+                        id="state"
+                        formControlName="state"
+                        [class.is-invalid]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">
+                      @if (addressForm.get('state')?.invalid &&
+                      addressForm.get('state')?.touched) {
+                      <div class="invalid-feedback">
+                        State/Province is required.
+                      </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="postalCode" class="form-label">Postal Code
+                        *</label>
+                      <input type="text"
+                        class="form-control"
+                        id="postalCode"
+                        formControlName="postalCode"
+                        [class.is-invalid]="addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched">
+                      @if (addressForm.get('postalCode')?.invalid &&
+                      addressForm.get('postalCode')?.touched) {
+                      <div class="invalid-feedback">
+                        Postal code is required.
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="country" class="form-label">Country *</label>
+                      <input type="text"
+                        class="form-control"
+                        id="country"
+                        formControlName="country"
+                        [class.is-invalid]="addressForm.get('country')?.invalid && addressForm.get('country')?.touched">
+                      @if (addressForm.get('country')?.invalid &&
+                      addressForm.get('country')?.touched) {
+                      <div class="invalid-feedback">
+                        Country is required.
+                      </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input"
+                      type="checkbox"
+                      id="isDefault"
+                      formControlName="isDefault">
+                    <label class="form-check-label" for="isDefault">
+                      Set as default shipping address
+                    </label>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                  <button type="button"
+                    class="btn btn-secondary"
+                    (click)="cancelAddressEdit()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                  </button>
+                  <button type="submit"
+                    class="btn btn-primary"
+                    [disabled]="addressForm.invalid || loading">
+                    <i class="fas fa-save me-2"></i>
+                    {{ loading ? 'Saving...' : (editingAddress ?
+                    'Update Address' : 'Add Address') }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          }
+
+          <!-- Addresses List -->
+          @if (addresses.length === 0) {
+          <div class="text-center py-4">
+            <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+            <h5>No addresses found</h5>
+            <p class="text-muted">Add your first shipping address to get
+              started.</p>
+            <button class="btn btn-primary" (click)="showAddressForm = true">
+              <i class="fas fa-plus me-2"></i>Add Address
+            </button>
+          </div>
+          } @else {
+          <div class="row">
+            @for (address of addresses; track address.id) {
+            <div class="col-md-6 mb-3">
+              <div class="card h-100"
+                [class.border-primary]="address.isDefault">
+                <div class="card-body">
+                  @if (address.isDefault) {
+                  <div class="badge bg-primary mb-2">
+                    <i class="fas fa-star me-1"></i>Default Address
+                  </div>
+                  }
+                  <h6 class="card-title">{{ address.street }}</h6>
+                  <p class="card-text">
+                    {{ address.city }}, {{ address.state }} {{
+                    address.postalCode }}<br>
+                    {{ address.country }}
+                  </p>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary"
+                      (click)="editAddress(address)"
+                      [disabled]="showAddressForm">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    @if (!address.isDefault) {
+                    <button class="btn btn-outline-success"
+                      (click)="setDefaultAddress(address.id!)"
+                      [disabled]="showAddressForm">
+                      <i class="fas fa-star"></i>
+                    </button>
+                    }
+                    <button class="btn btn-outline-danger"
+                      (click)="deleteAddress(address.id!)"
+                      [disabled]="showAddressForm">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          }
+          }
         </div>
       </div>
     </div>
   </div>
-</div> 
+</div>

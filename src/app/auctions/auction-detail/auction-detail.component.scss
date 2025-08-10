@@ -26,7 +26,7 @@
           color: #ffffff;
         }
       }
-      
+
       &.active {
         color: #ffffff;
         font-weight: 500;
@@ -44,19 +44,19 @@
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     border: 1px solid #0f3460;
-    
+
     .main-product-image {
       width: 100%;
       height: 500px;
       object-fit: cover;
       display: block;
     }
-    
+
     .image-overlay {
       position: absolute;
       top: 1rem;
       right: 1rem;
-      
+
       .auction-status-badge {
         background: rgba(0, 0, 0, 0.8);
         color: white;
@@ -64,7 +64,7 @@
         border-radius: 20px;
         font-size: 0.875rem;
         font-weight: 500;
-        
+
         &.ending-soon {
           background: #e94560;
           animation: pulse 2s infinite;
@@ -87,7 +87,7 @@
 
   .product-header {
     margin-bottom: 1.5rem;
-    
+
     .category-badge {
       display: inline-block;
       background: #0f3460;
@@ -98,7 +98,7 @@
       font-weight: 500;
       margin-bottom: 1rem;
     }
-    
+
     .product-title {
       font-size: 2rem;
       font-weight: 700;
@@ -106,11 +106,11 @@
       margin-bottom: 1rem;
       line-height: 1.2;
     }
-    
+
     .seller-info {
       color: #b8b8b8;
       font-size: 0.95rem;
-      
+
       strong {
         color: #ffffff;
       }
@@ -119,53 +119,53 @@
 
   .product-details {
     margin-bottom: 2rem;
-    
+
     .detail-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0.75rem 0;
       border-bottom: 1px solid #0f3460;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .detail-label {
         color: #b8b8b8;
         font-weight: 500;
       }
-      
+
       .detail-value {
         font-weight: 600;
         color: #ffffff;
       }
-      
+
       .condition-badge {
         padding: 0.25rem 0.75rem;
         border-radius: 20px;
         font-size: 0.875rem;
-        
+
         &.condition-mint {
           background: #28a745;
           color: #ffffff;
         }
-        
+
         &.condition-excellent {
           background: #17a2b8;
           color: #ffffff;
         }
-        
+
         &.condition-good {
           background: #ffc107;
           color: #212529;
         }
-        
+
         &.condition-fair {
           background: #fd7e14;
           color: #ffffff;
         }
-        
+
         &.condition-poor {
           background: #dc3545;
           color: #ffffff;
@@ -176,7 +176,7 @@
 
   .pricing-section {
     margin-bottom: 2rem;
-    
+
     .current-price-display {
       text-align: center;
       padding: 1.5rem;
@@ -184,25 +184,25 @@
       border-radius: 12px;
       color: white;
       margin-bottom: 1.5rem;
-      
+
       .price-label {
         font-size: 0.875rem;
         opacity: 0.9;
         margin-bottom: 0.5rem;
       }
-      
+
       .price-amount {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
       }
-      
+
       .starting-price {
         font-size: 0.875rem;
         opacity: 0.8;
       }
     }
-    
+
     .bid-form {
       .bid-input-group {
         display: flex;
@@ -212,7 +212,7 @@
         overflow: hidden;
         margin-bottom: 0.75rem;
         border: 2px solid #0f3460;
-        
+
         .currency-symbol {
           padding: 0.75rem 1rem;
           background: #0f3460;
@@ -220,7 +220,7 @@
           font-weight: 600;
           border-right: 1px solid #0f3460;
         }
-        
+
         .bid-input {
           flex: 1;
           border: none;
@@ -229,17 +229,17 @@
           font-size: 1rem;
           font-weight: 500;
           color: #ffffff;
-          
+
           &:focus {
             outline: none;
             background: #16213e;
           }
-          
+
           &::placeholder {
             color: #6c757d;
           }
         }
-        
+
         .bid-button {
           background: #e94560;
           color: white;
@@ -248,44 +248,44 @@
           font-weight: 600;
           cursor: pointer;
           transition: background-color 0.2s;
-          
+
           &:hover:not(:disabled) {
             background: #c44569;
           }
-          
+
           &:disabled {
             background: #6c757d;
             cursor: not-allowed;
           }
         }
       }
-      
+
       .min-bid-hint {
         font-size: 0.875rem;
         color: #b8b8b8;
         text-align: center;
       }
     }
-    
+
     .status-messages {
       .alert-message {
         padding: 1rem;
         border-radius: 8px;
         margin-bottom: 1rem;
         font-weight: 500;
-        
+
         &.login-required {
           background: #0f3460;
           color: #ffffff;
           border: 1px solid #0f3460;
-          
+
           a {
             color: #e94560;
             text-decoration: underline;
             font-weight: 600;
           }
         }
-        
+
         &.auction-ended {
           background: #dc3545;
           color: #ffffff;
@@ -302,7 +302,7 @@
       margin-bottom: 1rem;
       color: #ffffff;
     }
-    
+
     p {
       color: #b8b8b8;
       line-height: 1.6;
@@ -318,12 +318,12 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   border: 1px solid #0f3460;
-  
+
   .card-header {
     background: #0f3460;
     padding: 1.5rem;
     border-bottom: 1px solid #0f3460;
-    
+
     .section-title {
       font-size: 1.5rem;
       font-weight: 600;
@@ -331,7 +331,7 @@
       margin: 0;
       display: flex;
       align-items: center;
-      
+
       .bid-count {
         font-size: 1rem;
         color: #b8b8b8;
@@ -340,46 +340,46 @@
       }
     }
   }
-  
+
   .bid-history-content {
     padding: 1.5rem;
-    
+
     .bid-list {
       .bid-item {
         padding: 1rem 0;
         border-bottom: 1px solid #0f3460;
-        
+
         &:last-child {
           border-bottom: none;
         }
-        
+
         .bid-info {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          
+
           .bidder-info {
             flex: 1;
-            
+
             .bidder-name {
               font-weight: 600;
               color: #ffffff;
               margin-bottom: 0.25rem;
             }
-            
+
             .bid-time {
               font-size: 0.875rem;
               color: #b8b8b8;
             }
           }
-          
+
           .bid-amount {
             font-size: 1.25rem;
             font-weight: 700;
             color: #28a745;
             margin: 0 1rem;
           }
-          
+
           .bid-status {
             .winning-badge {
               background: #28a745;
@@ -393,23 +393,23 @@
         }
       }
     }
-    
+
     .no-bids-message {
       .empty-state {
         text-align: center;
         padding: 3rem 1rem;
         color: #b8b8b8;
-        
+
         i {
           color: #0f3460;
           margin-bottom: 1rem;
         }
-        
+
         h4 {
           color: #ffffff;
           margin-bottom: 0.5rem;
         }
-        
+
         p {
           margin: 0;
         }
@@ -424,10 +424,10 @@
   justify-content: center;
   align-items: center;
   min-height: 400px;
-  
+
   .loading-spinner {
     text-align: center;
-    
+
     .spinner {
       width: 40px;
       height: 40px;
@@ -437,7 +437,7 @@
       animation: spin 1s linear infinite;
       margin: 0 auto 1rem;
     }
-    
+
     p {
       color: #b8b8b8;
       margin: 0;
@@ -447,14 +447,24 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 // Responsive Design
@@ -463,11 +473,11 @@
     position: static;
     margin-top: 2rem;
   }
-  
+
   .product-gallery .main-image-container .main-product-image {
     height: 300px;
   }
-  
+
   .product-info-card .pricing-section .current-price-display .price-amount {
     font-size: 2rem;
   }
@@ -477,21 +487,21 @@
   .auction-detail-container {
     padding-bottom: 1rem;
   }
-  
+
   .product-info-card {
     padding: 1.5rem;
   }
-  
+
   .bid-history-card .bid-history-content .bid-list .bid-item .bid-info {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
-    
+
     .bid-amount {
       margin: 0;
     }
   }
-} 
+}
 
 .offer-form {
   background: #2a2a2a;
@@ -577,4 +587,272 @@
       }
     }
   }
-} 
+}
+
+// Winner Notification Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background-color: #f8f9fa;
+
+  .modal-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: #495057;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+
+  .winner-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border-left: 4px solid #28a745;
+
+    h6 {
+      color: #28a745;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 0.5rem;
+      color: #495057;
+
+      strong {
+        color: #212529;
+      }
+    }
+  }
+
+  .address-selection {
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-select {
+      border: 1px solid #ced4da;
+      border-radius: 0.375rem;
+      padding: 0.75rem;
+      transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
+
+      &:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+  }
+
+  .message-section {
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      border: 1px solid #ced4da;
+      border-radius: 0.375rem;
+      padding: 0.75rem;
+      transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
+
+      &:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #dee2e6;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background-color: #f8f9fa;
+
+  .btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.15s ease-in-out;
+
+    &:disabled {
+      opacity: 0.65;
+    }
+
+    &.btn-secondary {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #5a6268;
+        border-color: #545b62;
+      }
+    }
+
+    &.btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #1e7e34;
+        border-color: #1c7430;
+      }
+    }
+  }
+}
+
+// Winner notification section styles
+.winner-notification-section {
+  .alert {
+    border-radius: 0.5rem;
+    border: none;
+
+    &.alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    h6 {
+      color: #155724;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 0.75rem;
+      color: #155724;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      color: white;
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+
+      &:hover {
+        background-color: #1e7e34;
+        border-color: #1c7430;
+      }
+    }
+  }
+}
+
+.winner-status-section {
+  .alert {
+    border-radius: 0.5rem;
+    border: none;
+
+    &.alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border-left: 4px solid #ffc107;
+    }
+
+    h6 {
+      color: #856404;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 0.5rem;
+      color: #856404;
+    }
+  }
+}
+
+// Responsive design for modal
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .modal-header {
+    padding: 0.75rem 1rem;
+
+    .modal-title {
+      font-size: 1rem;
+    }
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

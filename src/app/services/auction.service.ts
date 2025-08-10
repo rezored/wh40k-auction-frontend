@@ -381,4 +381,47 @@ export class AuctionService {
       })))
     );
   }
+
+  // Auction Winner and Shipping Methods
+  getAuctionWinner(auctionId: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.configService.auctionEndpoints.list}/${auctionId}/winner`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getWinnerShippingAddress(auctionId: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.configService.auctionEndpoints.list}/${auctionId}/winner-address`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  notifyWinner(auctionId: string, message?: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.configService.auctionEndpoints.list}/${auctionId}/notify-winner`,
+      { message },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // Offer acceptance with address notification
+  acceptOfferWithAddress(offerId: string, shippingAddress: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.configService.offerEndpoints.respondToOffer(offerId)}/accept-with-address`,
+      {
+        response: 'accept',
+        shippingAddress
+      },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // Get shipping information for auction/offer
+  getShippingInfo(auctionId: string, userId: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.configService.auctionEndpoints.list}/${auctionId}/shipping/${userId}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 } 

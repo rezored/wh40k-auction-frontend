@@ -362,7 +362,6 @@
 
       &:hover {
         background: var(--accent-secondary);
-        transform: translateY(-2px);
       }
     }
   }
@@ -717,7 +716,6 @@
         &:hover {
           background: var(--accent-secondary);
           border-color: var(--accent-secondary);
-          transform: translateY(-2px);
         }
 
         &:disabled {

@@ -49,13 +49,48 @@
                         </div>
 
                         <!-- Edit Button for Auction Owner -->
-                         @if (isAuctionOwner()) {
+                        @if (isAuctionOwner()) {
                         <div class="auction-actions">
                             <a [routerLink]="['/auctions', auction.id, 'edit']"
                                 class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-edit me-2"></i>
                                 Edit Auction
                             </a>
+                        </div>
+                        }
+
+                        <!-- Winner Notification for Auction Owner -->
+                        @if (isAuctionOwner() && hasWinner()) {
+                        <div class="winner-notification-section mt-3">
+                            <div class="alert alert-success">
+                                <h6><i class="fas fa-trophy me-2"></i>Auction
+                                    Ended - Winner Found!</h6>
+                                <p class="mb-2">The auction has ended with a
+                                    winning bid of {{
+                                    formatPrice(getWinningBid()?.amount || 0)
+                                    }}</p>
+                                <button class="btn btn-success btn-sm"
+                                    (click)="showWinnerNotificationForm()">
+                                    <i class="fas fa-envelope me-2"></i>Notify
+                                    Winner with Address
+                                </button>
+                            </div>
+                        </div>
+                        }
+
+                        <!-- Winner Status for Bidder -->
+                        @if (isWinner()) {
+                        <div class="winner-status-section mt-3">
+                            <div class="alert alert-warning">
+                                <h6><i
+                                        class="fas fa-star me-2"></i>Congratulations!
+                                    You Won!</h6>
+                                <p class="mb-2">You won this auction with a bid
+                                    of {{ formatPrice(getWinningBid()?.amount ||
+                                    0) }}</p>
+                                <p class="mb-0">The seller will contact you with
+                                    shipping details.</p>
+                            </div>
                         </div>
                         }
                     </div>
@@ -299,6 +334,74 @@
     <div class="loading-spinner">
         <div class="spinner"></div>
         <p>Loading auction details...</p>
+    </div>
+</div>
+}
+
+<!-- Winner Notification Modal -->
+@if (showWinnerNotification) {
+<div class="modal-overlay" (click)="hideWinnerNotificationForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <i class="fas fa-envelope me-2"></i>
+                Notify Winner with Shipping Address
+            </h5>
+            <button type="button" class="btn-close"
+                (click)="hideWinnerNotificationForm()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="winner-info mb-3">
+                <h6>Winner Information</h6>
+                @if (getWinningBid()) {
+                <p><strong>Winner:</strong> {{ getWinningBid()?.bidder?.username
+                    }}</p>
+                <p><strong>Winning Bid:</strong> {{
+                    formatPrice(getWinningBid()?.amount || 0) }}</p>
+                }
+            </div>
+
+            <div class="address-selection mb-3">
+                <label class="form-label">Select Shipping Address</label>
+                <select class="form-select" [(ngModel)]="winnerAddress">
+                    <option [ngValue]="null">Choose an address...</option>
+                    @for (address of authService.addresses(); track address.id) {
+                    <option [ngValue]="address">
+                        {{ address.street }}, {{ address.city }}, {{
+                        address.state }} {{ address.postalCode }}
+                    </option>
+                    }
+                </select>
+                @if (!authService.addresses || authService.addresses.length ===
+                0) {
+                <div class="alert alert-warning mt-2">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    No addresses found. Please add a shipping address in your
+                    profile.
+                </div>
+                }
+            </div>
+
+            <div class="message-section mb-3">
+                <label class="form-label">Additional Message (Optional)</label>
+                <textarea class="form-control"
+                    [(ngModel)]="notificationMessage"
+                    rows="3"
+                    placeholder="Add a personal message to the winner..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary"
+                (click)="hideWinnerNotificationForm()">
+                <i class="fas fa-times me-2"></i>Cancel
+            </button>
+            <button type="button"
+                class="btn btn-success"
+                (click)="notifyWinner()"
+                [disabled]="!winnerAddress">
+                <i class="fas fa-paper-plane me-2"></i>Send Notification
+            </button>
+        </div>
     </div>
 </div>
 }

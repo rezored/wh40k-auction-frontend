@@ -4,12 +4,79 @@ import { Observable, catchError, of, retry, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { ConfigService } from './config.service';
 
+// User Profile Interfaces
+export interface UserAddress {
+    id?: string;
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    isDefault?: boolean;
+}
+
+export interface UserProfile {
+    id?: string;
+    username: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    addresses: UserAddress[];
+    preferences?: {
+        emailNotifications?: boolean;
+        smsNotifications?: boolean;
+        currency?: string;
+    };
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface UpdateProfileRequest {
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    preferences?: {
+        emailNotifications?: boolean;
+        smsNotifications?: boolean;
+        currency?: string;
+    };
+}
+
+export interface ChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export interface AddAddressRequest {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    isDefault?: boolean;
+}
+
+export interface UpdateAddressRequest {
+    id: string;
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    isDefault?: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private userSignal = signal<any | null>(null);
     private loginStatusSignal = signal<boolean>(false);
+    private addressesSignal = signal<UserAddress[]>([]);
     user = this.userSignal.asReadonly();
     loginStatus = this.loginStatusSignal.asReadonly();
+    addresses = this.addressesSignal.asReadonly();
     private validationRetryCount = 0;
     private maxRetries = 3;
 
@@ -300,5 +367,98 @@ export class AuthService {
     restoreUserState() {
         this.ensureUserState();
         return this.userSignal();
+    }
+
+    // Profile Management Methods
+    getProfile(): Observable<UserProfile> {
+        return this.http.get<UserProfile>(`${this.configService.apiUrl}/users/profile`, {
+            headers: this.getAuthHeaders()
+        });
+    }
+
+    updateProfile(profileData: UpdateProfileRequest): Observable<UserProfile> {
+        return this.http.put<UserProfile>(`${this.configService.apiUrl}/users/profile`, profileData, {
+            headers: this.getAuthHeaders()
+        }).pipe(
+            switchMap(updatedProfile => {
+                // Update local user data
+                const currentUser = this.userSignal();
+                if (currentUser) {
+                    const updatedUser = { ...currentUser, ...updatedProfile };
+                    this.userSignal.set(updatedUser);
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                }
+                return of(updatedProfile);
+            })
+        );
+    }
+
+    changePassword(passwordData: ChangePasswordRequest): Observable<any> {
+        return this.http.post(`${this.configService.apiUrl}/users/change-password`, passwordData, {
+            headers: this.getAuthHeaders()
+        });
+    }
+
+    // Address Management Methods
+    getAddresses(): Observable<UserAddress[]> {
+        return this.http.get<UserAddress[]>(`${this.configService.apiUrl}/users/addresses`, {
+            headers: this.getAuthHeaders()
+        });
+    }
+
+    addAddress(addressData: AddAddressRequest): Observable<UserAddress> {
+        return this.http.post<UserAddress>(`${this.configService.apiUrl}/users/addresses`, addressData, {
+            headers: this.getAuthHeaders()
+        }).pipe(
+            switchMap(newAddress => {
+                // Update local addresses
+                const currentAddresses = this.addressesSignal();
+                this.addressesSignal.set([...currentAddresses, newAddress]);
+                return of(newAddress);
+            })
+        );
+    }
+
+    updateAddress(addressData: UpdateAddressRequest): Observable<UserAddress> {
+        return this.http.put<UserAddress>(`${this.configService.apiUrl}/users/addresses/${addressData.id}`, addressData, {
+            headers: this.getAuthHeaders()
+        }).pipe(
+            switchMap(updatedAddress => {
+                // Update local addresses
+                const currentAddresses = this.addressesSignal();
+                const updatedAddresses = currentAddresses.map(addr =>
+                    addr.id === updatedAddress.id ? updatedAddress : addr
+                );
+                this.addressesSignal.set(updatedAddresses);
+                return of(updatedAddress);
+            })
+        );
+    }
+
+    deleteAddress(addressId: string): Observable<any> {
+        return this.http.delete(`${this.configService.apiUrl}/users/addresses/${addressId}`, {
+            headers: this.getAuthHeaders()
+        }).pipe(
+            switchMap(() => {
+                // Update local addresses
+                const currentAddresses = this.addressesSignal();
+                const updatedAddresses = currentAddresses.filter(addr => addr.id !== addressId);
+                this.addressesSignal.set(updatedAddresses);
+                return of({});
+            })
+        );
+    }
+
+    setDefaultAddress(addressId: string): Observable<any> {
+        return this.http.post(`${this.configService.apiUrl}/users/addresses/${addressId}/set-default`, {}, {
+            headers: this.getAuthHeaders()
+        });
+    }
+
+    // Get winner address for auction notifications
+    getWinnerAddress(userId: string): Observable<UserAddress> {
+        return this.http.get<UserAddress>(`${this.configService.apiUrl}/users/${userId}/default-address`, {
+            headers: this.getAuthHeaders()
+        });
     }
 }

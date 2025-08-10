@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuctionService, Auction, Bid, Offer, CreateOfferRequest } from '../../services/auction.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, UserAddress } from '../../services/auth.service';
 import { CurrencyService } from '../../services/currency.service';
 import { ToastService } from '../../services/toast.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
     selector: 'app-auction-detail',
@@ -22,6 +23,11 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
     offerAmount: number = 0;
     offerMessage: string = '';
 
+    // Winner notification properties
+    showWinnerNotification = false;
+    winnerAddress: UserAddress | null = null;
+    notificationMessage = '';
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -29,6 +35,7 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         public authService: AuthService,
         public currencyService: CurrencyService,
         private toastService: ToastService,
+        private notificationService: NotificationService,
         private cdr: ChangeDetectorRef
     ) { }
 
@@ -38,6 +45,11 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
 
         // Debug user state
         console.log('Auth service debug status:', this.authService.debugTokenStatus());
+
+        // Load user addresses if logged in
+        if (this.authService.isUserLoggedIn()) {
+            this.loadUserAddresses();
+        }
 
         const auctionId = this.route.snapshot.paramMap.get('id');
         if (auctionId) {
@@ -62,6 +74,18 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
             error: (error) => {
                 console.error('Error loading auction:', error);
                 this.loading = false;
+            }
+        });
+    }
+
+    loadUserAddresses() {
+        this.authService.getAddresses().subscribe({
+            next: (addresses) => {
+                // Addresses are automatically updated in the signal
+                this.cdr.detectChanges();
+            },
+            error: (error) => {
+                console.error('Error loading addresses:', error);
             }
         });
     }
@@ -103,6 +127,105 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
                 this.toastService.error('Failed to submit offer. Please try again.');
             }
         });
+    }
+
+    // Winner notification methods
+    showWinnerNotificationForm() {
+        this.showWinnerNotification = true;
+        this.cdr.detectChanges();
+    }
+
+    hideWinnerNotificationForm() {
+        this.showWinnerNotification = false;
+        this.winnerAddress = null;
+        this.notificationMessage = '';
+        this.cdr.detectChanges();
+    }
+
+    async notifyWinner() {
+        if (!this.auction || !this.winnerAddress) return;
+
+        try {
+            // Get the winning bid to find the winner
+            const winningBid = this.auction.bids.reduce((prev, current) =>
+                (prev.amount > current.amount) ? prev : current
+            );
+
+            if (!winningBid.bidder) {
+                this.toastService.error('No winning bidder found');
+                return;
+            }
+
+            // Send winner notification with address
+            await this.notificationService.notifyAuctionWinner({
+                auctionId: this.auction.id,
+                winnerId: winningBid.bidder.id,
+                winnerAddress: this.winnerAddress,
+                finalPrice: winningBid.amount,
+                auctionTitle: this.auction.title,
+                message: this.notificationMessage
+            }).toPromise();
+
+            this.toastService.success('Winner notified successfully with shipping address!');
+            this.hideWinnerNotificationForm();
+        } catch (error) {
+            console.error('Error notifying winner:', error);
+            this.toastService.error('Failed to notify winner');
+        }
+    }
+
+    async acceptOfferWithAddress(offer: Offer) {
+        if (!this.auction || !offer.buyer) return;
+
+        try {
+            // Get buyer's default address
+            const buyerAddress = await this.authService.getWinnerAddress(offer.buyer.id).toPromise();
+
+            if (!buyerAddress) {
+                this.toastService.error('Buyer has no shipping address configured');
+                return;
+            }
+
+            // Accept the offer and send address notification
+            await this.notificationService.notifyOfferAccepted({
+                offerId: offer.id,
+                buyerId: offer.buyer.id,
+                buyerAddress: buyerAddress,
+                offerAmount: offer.amount,
+                auctionTitle: this.auction.title,
+                message: this.notificationMessage
+            }).toPromise();
+
+            this.toastService.success('Offer accepted and buyer notified with your address!');
+            this.loadAuction(this.auction.id);
+        } catch (error) {
+            console.error('Error accepting offer:', error);
+            this.toastService.error('Failed to accept offer');
+        }
+    }
+
+    // Check if auction has ended and has a winner
+    hasWinner(): boolean {
+        return this.auction?.status === 'ended' &&
+            this.auction.bids &&
+            this.auction.bids.length > 0;
+    }
+
+    // Get winning bid
+    getWinningBid(): Bid | null {
+        if (!this.auction?.bids || this.auction.bids.length === 0) {
+            return null;
+        }
+        return this.auction.bids.reduce((prev, current) =>
+            (prev.amount > current.amount) ? prev : current
+        );
+    }
+
+    // Check if current user is the winner
+    isWinner(): boolean {
+        const winningBid = this.getWinningBid();
+        const currentUser = this.authService.user();
+        return winningBid?.bidder?.id === currentUser?.id;
     }
 
     canBid(): boolean {
