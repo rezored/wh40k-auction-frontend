@@ -118,14 +118,12 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   onSubmit() {
-    console.log('Login attempt for email:', this.email, 'Remember me:', this.rememberMe);
     this.loading = true;
     this.authService.login(this.email, this.password).subscribe({
       next: (response: { access_token: string, user: any }) => {
-        console.log('Login successful, response:', response);
         this.authService.setUserData(response.access_token, response.user, this.rememberMe);
         this.loading = false;
         this.router.navigate(['/auctions']);

@@ -177,12 +177,7 @@ export class AuctionService {
     // Use auth headers for all requests
     const headers = this.getAuthHeaders();
 
-    // Debug: Check if we have authentication for showOwn requests
-    if (filters?.showOwn) {
-      const token = this.authService.getToken();
-      const isLoggedIn = this.authService.isUserLoggedIn();
-      console.log('ShowOwn request - Token exists:', !!token, 'User logged in:', isLoggedIn);
-    }
+
 
     return this.http.get<any>(url, { headers }).pipe(
       map(response => {
@@ -373,42 +368,23 @@ export class AuctionService {
       { headers: this.getAuthHeaders() }
     ).pipe(
       map(response => {
-        console.log('Raw response from getMyAuctions:', response);
-
         // Handle different response structures
         let auctions: any[];
 
         if (Array.isArray(response)) {
           // Direct array response
-          console.log('Response is direct array, length:', response.length);
           auctions = response;
         } else if (response && response.auctions && Array.isArray(response.auctions)) {
           // Paginated response structure
-          console.log('Response has auctions property, length:', response.auctions.length);
           auctions = response.auctions;
         } else if (response && response.data && Array.isArray(response.data)) {
           // Data wrapper response
-          console.log('Response has data property, length:', response.data.length);
           auctions = response.data;
         } else {
           // Fallback to empty array if response structure is unexpected
           console.warn('Unexpected response structure for getMyAuctions:', response);
           auctions = [];
         }
-
-        // Debug: Log each auction's structure
-        auctions.forEach((auction, index) => {
-          console.log(`Auction ${index + 1} structure:`, {
-            id: auction.id,
-            title: auction.title,
-            saleType: auction.saleType,
-            hasOffers: !!auction.offers,
-            offersLength: auction.offers?.length || 0,
-            hasBids: !!auction.bids,
-            bidsLength: auction.bids?.length || 0,
-            allKeys: Object.keys(auction)
-          });
-        });
 
         return auctions.map(auction => this.convertAuctionDates(auction));
       })

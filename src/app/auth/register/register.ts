@@ -28,7 +28,6 @@ export class RegisterComponent {
     }
 
     onSubmit() {
-        console.log('onSubmit');
         if (this.password !== this.confirmPassword) {
             alert('Passwords do not match');
             return;

@@ -165,58 +165,6 @@
     }
 }
 
-// Debug Panel
-.debug-panel {
-    margin: 2rem 0;
-
-    .debug-card {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-radius: 0.75rem;
-        border: 2px solid #cbd5e1;
-        padding: 1.5rem;
-        box-shadow: 0 4px 16px rgba(203, 213, 225, 0.3);
-
-        .debug-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #cbd5e1;
-            padding-bottom: 0.5rem;
-        }
-
-        .debug-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-
-            .debug-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.5rem;
-                background: white;
-                border-radius: 0.5rem;
-                border: 1px solid #e2e8f0;
-
-                .debug-label {
-                    font-weight: 600;
-                    color: #64748b;
-                }
-
-                .debug-value {
-                    font-family: monospace;
-                    color: #1e293b;
-                    background: #f1f5f9;
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 0.25rem;
-                    font-size: 0.9rem;
-                }
-            }
-        }
-    }
-}
-
 // Results Section
 .results-section {
     .results-header {
@@ -288,13 +236,6 @@
         width: 4rem;
         height: 4rem;
         animation: spinner-border 0.75s linear infinite;
-
-        // Fallback animation if Bootstrap's spinner-border animation isn't available
-        @keyframes spinner-border {
-            to {
-                transform: rotate(360deg);
-            }
-        }
     }
 
     .loading-text {
@@ -397,53 +338,6 @@
             color: var(--light-text);
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
-        }
-    }
-}
-
-// No Auctions Available State
-.no-auctions-state {
-    background: linear-gradient(145deg, rgba(233, 69, 96, 0.1), rgba(196, 69, 105, 0.05));
-    border-radius: 20px;
-    border: 2px solid rgba(233, 69, 96, 0.3);
-    margin: 2rem 0;
-    padding: 4rem 2rem;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(233, 69, 96, 0.2);
-    backdrop-filter: blur(10px);
-
-    .no-auctions-icon {
-        font-size: 5rem;
-        color: var(--accent-color);
-        margin-bottom: 2rem;
-        animation: pulse 2s ease-in-out infinite;
-    }
-
-    .no-auctions-title {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--light-text);
-        margin-bottom: 1rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .no-auctions-text {
-        font-size: 1.2rem;
-        color: var(--muted-text);
-        margin-bottom: 2rem;
-        line-height: 1.6;
-        opacity: 0.9;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
-        border: none;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-
-        &:hover {
-            box-shadow: 0 8px 25px rgba(49, 130, 206, 0.4);
         }
     }
 }
@@ -790,201 +684,6 @@
     }
 }
 
-// Animations
-@keyframes pulse {
-    0% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.7;
-        transform: scale(1.05);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInOut {
-    0%,
-    100% {
-        opacity: 0.7;
-    }
-    50% {
-        opacity: 1;
-    }
-}
-
-@keyframes bounce {
-    0%,
-    20%,
-    50%,
-    80%,
-    100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-.fade-in-up {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-// Responsive Design
-@media (max-width: 991.98px) {
-    .hero-section {
-        padding: 3rem 0;
-
-        .hero-content .hero-title {
-            font-size: 2.5rem;
-        }
-    }
-
-    .filters-section .filters-card {
-        padding: 2rem;
-    }
-
-    .auctions-grid .auction-card {
-        .auction-image {
-            height: 220px;
-        }
-
-        .auction-content {
-            padding: 1.5rem;
-        }
-    }
-}
-
-@media (max-width: 767.98px) {
-    .hero-section {
-        padding: 2.5rem 0;
-
-        .hero-content {
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1.1rem;
-            }
-        }
-    }
-
-    .filters-section .filters-card {
-        padding: 1.5rem;
-    }
-
-    .auctions-grid {
-        .row {
-            margin: 0;
-        }
-
-        .auction-card {
-            .auction-image {
-                height: 200px;
-            }
-
-            .auction-content {
-                padding: 1.25rem;
-            }
-
-            .auction-title {
-                font-size: 1.2rem;
-            }
-
-            .auction-pricing {
-                padding: 1rem;
-
-                .current-price .price-amount {
-                    font-size: 1.3rem;
-                }
-            }
-
-            .auction-actions {
-                flex-direction: column;
-                gap: 0.75rem;
-
-                .btn {
-                    width: 100%;
-                }
-            }
-        }
-    }
-
-    .results-header {
-        text-align: center;
-
-        .row {
-            flex-direction: column;
-            gap: 1rem;
-        }
-    }
-}
-
-@media (max-width: 575.98px) {
-    .hero-section {
-        padding: 2rem 0;
-
-        .hero-content {
-            .hero-title {
-                font-size: 1.75rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-        }
-    }
-
-    .filters-section .filters-card {
-        padding: 1rem;
-
-        .row {
-            margin: 0;
-        }
-
-        .col-sm-6 {
-            margin-bottom: 1rem;
-        }
-    }
-
-    .auctions-grid .auction-card {
-        .auction-image {
-            height: 180px;
-        }
-
-        .auction-content {
-            padding: 1rem;
-        }
-
-        .auction-title {
-            font-size: 1.1rem;
-        }
-
-        .auction-description {
-            font-size: 0.9rem;
-            -webkit-line-clamp: 2;
-        }
-    }
-}
-
 // Pagination Section
 .pagination-section {
     margin-top: 3rem;
@@ -1048,5 +747,180 @@
     small {
         color: var(--muted-text);
         font-size: 0.9rem;
+    }
+}
+
+// Animations
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInOut {
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+// Responsive Design
+@media (max-width: 991.98px) {
+    .hero-section {
+        padding: 3rem 0;
+        .hero-content .hero-title {
+            font-size: 2.5rem;
+        }
+    }
+    .filters-section .filters-card {
+        padding: 2rem;
+    }
+    .auctions-grid .auction-card {
+        .auction-image {
+            height: 220px;
+        }
+        .auction-content {
+            padding: 1.5rem;
+        }
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-section {
+        padding: 2.5rem 0;
+        .hero-content {
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    }
+    .filters-section .filters-card {
+        padding: 1.5rem;
+    }
+    .auctions-grid {
+        .row {
+            margin: 0;
+        }
+        .auction-card {
+            .auction-image {
+                height: 200px;
+            }
+            .auction-content {
+                padding: 1.25rem;
+            }
+            .auction-title {
+                font-size: 1.2rem;
+            }
+            .auction-pricing {
+                padding: 1rem;
+                .current-price .price-amount {
+                    font-size: 1.3rem;
+                }
+            }
+            .auction-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+                .btn {
+                    width: 100%;
+                }
+            }
+        }
+    }
+    .results-header {
+        text-align: center;
+        .row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-section {
+        padding: 2rem 0;
+        .hero-content {
+            .hero-title {
+                font-size: 1.75rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+        }
+    }
+    .filters-section .filters-card {
+        padding: 1rem;
+        .row {
+            margin: 0;
+        }
+        .col-sm-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    .auctions-grid .auction-card {
+        .auction-image {
+            height: 180px;
+        }
+        .auction-content {
+            padding: 1rem;
+        }
+        .auction-title {
+            font-size: 1.1rem;
+        }
+        .auction-description {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 2;
+        }
     }
 }

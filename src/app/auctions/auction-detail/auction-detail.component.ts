@@ -42,7 +42,7 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         this.authService.restoreUserState();
 
         // Debug user state
-        console.log('Auth service debug status:', this.authService.debugTokenStatus());
+
 
         // Load user addresses if logged in
         if (this.authService.isUserLoggedIn()) {

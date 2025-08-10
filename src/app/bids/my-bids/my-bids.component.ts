@@ -45,7 +45,6 @@ export class MyBidsComponent implements OnInit {
 
         this.auctionService.getMyBids().subscribe({
             next: (bids) => {
-                console.log('Received bids from backend:', bids);
                 this.bids = bids || [];
                 this.loadingBids = false;
                 this.cdr.detectChanges(); // Trigger change detection after data loads
@@ -79,7 +78,6 @@ export class MyBidsComponent implements OnInit {
 
         this.auctionService.getMyOffers().subscribe({
             next: (offers) => {
-                console.log('Received offers from backend:', offers);
                 this.offers = offers || [];
                 this.loadingOffers = false;
                 this.cdr.detectChanges(); // Trigger change detection after data loads

@@ -58,19 +58,8 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
 
         this.auctionService.getMyAuctions().subscribe({
             next: (auctions) => {
-                console.log('My auctions loaded:', auctions);
                 // Ensure auctions is always an array
                 this.auctions = Array.isArray(auctions) ? auctions : [];
-
-                // Debug: Log each auction's sale type and offers
-                this.auctions.forEach(auction => {
-                    console.log(`Auction "${auction.title}":`, {
-                        id: auction.id,
-                        saleType: auction.saleType,
-                        offers: auction.offers,
-                        offersCount: auction.offers?.length || 0
-                    });
-                });
 
                 this.loading = false;
                 this.cdr.detectChanges();
@@ -96,18 +85,10 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
 
         this.auctionService.getMyAuctions().subscribe({
             next: (auctions) => {
-                console.log('Loading pending offers from auctions:', auctions);
                 if (Array.isArray(auctions)) {
                     auctions.forEach(auction => {
-                        console.log(`Checking offers for auction "${auction.title}":`, {
-                            auctionId: auction.id,
-                            offers: auction.offers,
-                            offersCount: auction.offers?.length || 0
-                        });
-
                         if (auction.offers && auction.offers.length > 0) {
                             const pending = auction.offers.filter(offer => offer.status === 'pending');
-                            console.log(`Found ${pending.length} pending offers for auction "${auction.title}"`);
 
                             pending.forEach(offer => {
                                 // Add auction info to the offer for display
@@ -116,8 +97,6 @@ export class MyAuctionsComponent implements OnInit, OnDestroy {
                                 (offer as any).auctionImage = auction.imageUrl;
                                 pendingOffers.push(offer);
                             });
-                        } else {
-                            console.log(`No offers found for auction "${auction.title}"`);
                         }
                     });
                 } else {
